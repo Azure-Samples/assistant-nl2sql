@@ -1,57 +1,80 @@
-# Project Name
+# <img src="./images/azure_logo.png" alt="Azure Logo" style="width:30px;height:30px;"/> Azure Open AI Assistant for Natural Language to SQL
+# Assistant NL2SQL
 
-(short, 1-3 sentenced, description of the project)
+Assistant NL2SQL is a natural language processing tool that converts natural language queries into SQL queries. This project aims to simplify database querying for users who may not be familiar with SQL syntax.
 
 ## Features
 
-This project framework provides the following features:
+- Convert natural language questions to SQL queries
+- Support for PostgreSQL
+- User-friendly interface
+- High accuracy and performance
+- Auto correction given possible errors
 
-* Feature 1
-* Feature 2
-* ...
+## Setup
 
-## Getting Started
+To setup the project, clone the repository and install the dependencies:
 
-### Prerequisites
+```bash
+git clone https://github.com/Azure-Samples/assistant-nl2sql.git
+cd assistant-nl2sql
 
-(ideally very short, if any)
+python -m venv venv
+source venv/bin/activate
 
-- OS
-- Library version
-- ...
+pip install -r requirements.txt
+```
 
-### Installation
+## Usage
 
-(ideally very short)
+To use the tool, run the following command:
 
-- npm install [package name]
-- mvn install
-- ...
+```bash
+python3 src/main.py  
+```
+Then, follow the on-screen instructions to input your natural language query.
 
-### Quickstart
-(Add steps to get up and running quickly)
+## Examples
+You can test the assistant with the following examples:
 
-1. git clone [repository clone url]
-2. cd [repository name]
-3. ...
+Input:
+```Give me the seller name with the best sales performance
+```
+
+Input:
+```Show me the total sales amount for each seller
+```
 
 
-## Demo
+## Infrastructure
+You can use the shell script `set_up.sh` to set up the infrastructure on Azure. This script will create a resource group, a storage account, a container, and a PostgreSQL database. To run the script, you need to have the Azure CLI installed and be logged in. You can install the Azure CLI by following the instructions [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli).
 
-A demo app is included to show how to use the project.
+Please, pay attention on the costs of the resources created by the script. 
 
-To run the demo, follow these steps:
+```bash
+az login
 
-(Add steps to start up the demo)
+./set_up.sh run_all
+```
 
-1.
-2.
-3.
+## PostgreSQL Database
+We provide a sample PostgreSQL tables that you can use to test the assistant. 
 
-## Resources
+```bash
+```
 
-(Any additional resources or related projects)
+### Table's Schema
 
-- Link to supporting information
-- Link to similar sample
-- ...
+[![Schema](./images/tables_structure.png)]
+
+## Contributing
+
+We welcome contributions! Please read our [contributing guidelines](CONTRIBUTING.md) before submitting a pull request.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Contact
+
+For any questions or feedback, please open an issue on GitHub.
