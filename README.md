@@ -38,11 +38,13 @@ Then, follow the on-screen instructions to input your natural language query.
 You can test the assistant with the following examples:
 
 Input:
-```Give me the seller name with the best sales performance
+```
+Give me the seller name with the best sales performance
 ```
 
 Input:
-```Show me the total sales amount for each seller
+```
+Show me the total sales amount for each seller
 ```
 
 
