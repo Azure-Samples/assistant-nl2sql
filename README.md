@@ -62,7 +62,8 @@ az login
 ## PostgreSQL Database
 We provide a sample PostgreSQL tables that you can use to test the assistant. 
 
-```bash
+```python
+python3 util/create-sample-database.py
 ```
 
 ### Table's Schema
