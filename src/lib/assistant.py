@@ -6,7 +6,15 @@ import json
 import time
 
 class AIAssistant:
-    def __init__(self, client: AzureOpenAI, verbose: bool = False, name: str = "AI Assistant", description: str = "An AI Assistant", instrunctions: str = None, model: str = None, tools: list[dict] = None, functions: list[Function] = None,  auto_delete: bool = True): 
+    def __init__(self, client: AzureOpenAI, 
+                 verbose: bool = False, 
+                 name: str = "AI Assistant", 
+                 description: str = "An AI Assistant", 
+                 instrunctions: str = None, 
+                 model: str = None, 
+                 tools: list[dict] = None, 
+                 functions: list[Function] = None, 
+                 auto_delete: bool = True): 
         self.client = client
         self.verbose = verbose
         self.threads = []
