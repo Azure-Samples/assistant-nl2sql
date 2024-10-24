@@ -169,11 +169,11 @@ function run_all() {
     add_connection_to_hub
     create_env
     create_search_service
-    case $1 in
-        run_postgresql)
+    case $2 in
+        postgresql)
             create_postgresql
             ;;
-        run_bigquery)
+        bigquery)
             create_bigquery
             ;;
     esac

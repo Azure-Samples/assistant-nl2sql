@@ -61,13 +61,13 @@ Please, pay attention to the costs of the resources created by the script.
 To create resources for the postgresql assistant 
 ```bash
 az login
-./set_up.sh run_postgresql
+./set_up.sh run_all postgresql
 ```
 
 To create resources for the bigquery assistant 
 ```bash
 az login
-./set_up.sh run_bigquery
+./set_up.sh run_all bigquery
 ```
 
 ## Supported Databases:
