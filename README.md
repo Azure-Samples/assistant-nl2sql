@@ -80,8 +80,7 @@ az login
     python3 util/create-sample-database.py
     ```
 
-    - Table's Schema
-    <br>
+    - Table's Schema<br>
     ![Schema](./images/tables_structure.png)
 
 - **BigQuery**
