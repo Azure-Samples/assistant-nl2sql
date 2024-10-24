@@ -6,7 +6,7 @@ Assistant NL2SQL is a natural language processing tool that converts natural lan
 ## Features
 
 - Convert natural language questions to SQL queries
-- Support for PostgreSQL
+- Support for PostgreSQL and BigQuery
 - User-friendly interface
 - High accuracy and performance
 - Auto correction given possible errors
@@ -30,7 +30,7 @@ pip install -r requirements.txt
 To use the tool, run the following command:
 
 ```bash
-python3 src/main.py  
+python3 src/main.p --database postgres  
 ```
 Then, follow the on-screen instructions to input your natural language query.
 

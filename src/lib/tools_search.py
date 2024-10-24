@@ -5,6 +5,7 @@ from openai import AzureOpenAI
 import os
 from dotenv import load_dotenv
 
+
 class FetchSimilarQueries(Function):
     def __init__(self):
         load_dotenv(override=True)
@@ -18,13 +19,13 @@ class FetchSimilarQueries(Function):
                     type="string",
                     required=True,
                 )
-            ]
+            ],
         )
 
         self.aoai_client = AzureOpenAI(
             azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
             api_version=os.getenv("AZURE_OPENAI_API_VERSION"),
-            api_key=os.getenv("AZURE_OPENAI_KEY")
+            api_key=os.getenv("AZURE_OPENAI_KEY"),
         )
 
         self.embedding_deployment = os.getenv("AZURE_OPENAI_EMBEDDING_MODEL_NAME")
@@ -37,11 +38,13 @@ class FetchSimilarQueries(Function):
 
     def get_embedding(self, text) -> list:
         return (
-            self.aoai_client.embeddings.create(input=text, model=self.embedding_deployment)
+            self.aoai_client.embeddings.create(
+                input=text, model=self.embedding_deployment
+            )
             .data[0]
             .embedding
         )
-    
+
     def function(self, user_question):
         try:
             search_vector = self.get_embedding(user_question)
@@ -56,19 +59,19 @@ class FetchSimilarQueries(Function):
             )
 
             docs = [
-                {
-                    "question": doc["question"],
-                    "bigquery": doc["bigquery"]
-                }
+                {"question": doc["question"], "bigquery": doc["bigquery"]}
                 for doc in result
             ]
 
             result = """Examples of similar User Questions with their corresponding BigQuery:\n"""
             result += "\n\n".join(
-                [f"User Question: {doc['question']}\nBigQuery: {doc['bigquery']}" for doc in docs]
+                [
+                    f"User Question: {doc['question']}\nBigQuery: {doc['bigquery']}"
+                    for doc in docs
+                ]
             )
-            
+
             return result
-        
+
         except Exception as e:
             return f"Error fetching similar queries: {e}"

@@ -2,17 +2,19 @@ from google.cloud import bigquery
 from .function import Function, Property
 from .config import bigquery_config as config
 
+
 class GetDBSchema(Function):
     def __init__(self):
         super().__init__(
             name="get_db_schema",
             description="Get the schema of the BigQuery dataset",
         )
+
     def function(self):
         client = bigquery.Client.from_service_account_json(config.service_account_json)
         dataset_ref = client.dataset(config.dataset_id)
         tables = client.list_tables(dataset_ref)
-        
+
         create_statements = []
         sample_rows_info = ""
 
@@ -20,15 +22,15 @@ class GetDBSchema(Function):
             table_ref = dataset_ref.table(table.table_id)
             table_obj = client.get_table(table_ref)
             schema = table_obj.schema
-            
+
             create_statement = f"CREATE TABLE {table.table_id} ("
             column_definitions = []
             for field in schema:
                 column_def = f"{field.name} {field.field_type}"
-                if field.mode == 'REQUIRED':
+                if field.mode == "REQUIRED":
                     column_def += " NOT NULL"
                 column_definitions.append(column_def)
-            
+
             create_statement += ", ".join(column_definitions) + ");"
             create_statements.append(create_statement)
 
@@ -42,11 +44,11 @@ class GetDBSchema(Function):
                 f"{columns_str}\n"
                 f"{rows_str}\n"
             )
-                
-        table_info = '\n\n'.join(create_statements) + '\n\n' + sample_rows_info
+
+        table_info = "\n\n".join(create_statements) + "\n\n" + sample_rows_info
 
         return table_info
-    
+
 
 class RunSQLQuery(Function):
     def __init__(self):
@@ -60,14 +62,17 @@ class RunSQLQuery(Function):
                     type="string",
                     required=True,
                 ),
-            ]
+            ],
         )
+
     def function(self, query):
         try:
-            client = bigquery.Client.from_service_account_json(config.service_account_json)
+            client = bigquery.Client.from_service_account_json(
+                config.service_account_json
+            )
             query_job = client.query(query)
             results = query_job.result()
-            return '\n'.join([str(result) for result in results])
+            return "\n".join([str(result) for result in results])
         except Exception as e:
             return f"Error running query: {e}"
 
@@ -78,9 +83,12 @@ class ListTables(Function):
             name="list_tables",
             description="List the tables in the BigQuery dataset",
         )
+
     def function(self):
         try:
-            client = bigquery.Client.from_service_account_json(config.service_account_json)
+            client = bigquery.Client.from_service_account_json(
+                config.service_account_json
+            )
             dataset_ref = client.dataset(config.dataset_id)
             tables = client.list_tables(dataset_ref)
             table_names = [table.table_id for table in tables]
@@ -107,12 +115,14 @@ class FetchDistinctValues(Function):
                     type="string",
                     required=True,
                 ),
-            ]
+            ],
         )
 
     def function(self, table_name, column_name):
         try:
-            client = bigquery.Client.from_service_account_json(config.service_account_json)
+            client = bigquery.Client.from_service_account_json(
+                config.service_account_json
+            )
             query = f"""
                 SELECT {column_name}, COUNT(*) as qty
                 FROM `{config.dataset_id}.{table_name}`
@@ -126,12 +136,12 @@ class FetchDistinctValues(Function):
             colnames = [field.name for field in rows.schema]
             result = " | ".join(colnames) + "\n"
             result += "\n".join([" | ".join(map(str, row.values())) for row in rows])
-            
+
             return result
-        
+
         except Exception as e:
             return f"Error fetching distinct values: {e}"
-        
+
 
 class FetchSimilarValues(Function):
     def __init__(self):
@@ -156,13 +166,15 @@ class FetchSimilarValues(Function):
                     description="The value to find similar values",
                     type="string",
                     required=True,
-                )
-            ]
+                ),
+            ],
         )
 
     def function(self, table_name, column_name, value):
         try:
-            client = bigquery.Client.from_service_account_json(config.service_account_json)
+            client = bigquery.Client.from_service_account_json(
+                config.service_account_json
+            )
             query = f"""
                 SELECT {column_name},
                        SIMILARITY(CAST({column_name} AS STRING), '{value}') AS similarity_score
@@ -180,10 +192,8 @@ class FetchSimilarValues(Function):
             colnames = [field.name for field in rows.schema]
             result = " | ".join(colnames) + "\n"
             result += "\n".join([" | ".join(map(str, row.values())) for row in rows])
-            
+
             return result
-        
+
         except Exception as e:
             return f"Error fetching similar values: {e}"
-
-

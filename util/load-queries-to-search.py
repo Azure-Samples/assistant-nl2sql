@@ -11,6 +11,7 @@ from openai import AzureOpenAI
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 class AzureSearchIndexer:
     def __init__(self):
         load_dotenv(override=True)
@@ -23,25 +24,31 @@ class AzureSearchIndexer:
         self.aoai_client = AzureOpenAI(
             azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
             api_version=os.getenv("AZURE_OPENAI_API_VERSION"),
-            api_key=os.getenv("AZURE_OPENAI_KEY")
+            api_key=os.getenv("AZURE_OPENAI_KEY"),
         )
 
         self.embedding_deployment = os.getenv("AZURE_OPENAI_EMBEDDING_MODEL_NAME")
 
     def get_embedding(self, text) -> list:
         logger.info(f"Generating embedding for text...")
-        embedding = self.aoai_client.embeddings.create(input=text, model=self.embedding_deployment).data[0].embedding
+        embedding = (
+            self.aoai_client.embeddings.create(
+                input=text, model=self.embedding_deployment
+            )
+            .data[0]
+            .embedding
+        )
         return embedding
-    
+
     def insert_data(self, data_file):
         logger.info(f"Reading data from file: {data_file}")
         documents = []
         with open(data_file, "r") as file:
-            reader = csv.reader(file, delimiter=',')
-            next(reader)  
+            reader = csv.reader(file, delimiter=",")
+            next(reader)
             for row in reader:
-                question = row[0].replace('"""','')
-                query = row[1].replace('"""','')
+                question = row[0].replace('"""', "")
+                query = row[1].replace('"""', "")
 
                 logger.info("Processing row...")
 
@@ -49,7 +56,7 @@ class AzureSearchIndexer:
                     "id": str(uuid.uuid4()),
                     "question": question,
                     "vector": self.get_embedding(question),
-                    "bigquery": query
+                    "bigquery": query,
                 }
 
                 documents.append(document)
@@ -60,6 +67,7 @@ class AzureSearchIndexer:
             logger.info("Documents indexed successfully")
         except Exception as e:
             logger.error(f"Error indexing documents: {e}")
+
 
 if __name__ == "__main__":
     indexer = AzureSearchIndexer()

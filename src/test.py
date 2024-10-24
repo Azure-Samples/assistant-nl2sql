@@ -1,7 +1,14 @@
 import os
 from google.cloud import bigquery
 from dotenv import load_dotenv
-from lib.tools_bigquery import GetDBSchema, RunSQLQuery, ListTables, FetchDistinctValues, FetchSimilarValues
+from lib.tools_bigquery import (
+    GetDBSchema,
+    RunSQLQuery,
+    ListTables,
+    FetchDistinctValues,
+    FetchSimilarValues,
+)
+
 
 def test():
     # Initialize the GetDBSchema function
@@ -30,8 +37,9 @@ def test():
     #     GROUP BY 1
     #     ORDER BY 2
     #     """
-    
-    print(fetch_similar_values.function('products', 'product_category', 'electro'))
+
+    print(fetch_similar_values.function("products", "product_category", "electro"))
+
 
 if __name__ == "__main__":
     # Load environment variables from .env file
