@@ -3,3 +3,5 @@ python-dotenv>=1.0.1, <2.0.0
 ipykernel<=6.8.0
 psycopg2-binary
 faker
+google-cloud-bigquery
+azure-search-documents==11.4.0
