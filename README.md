@@ -69,8 +69,7 @@ az login
     ```
 
     - Table's Schema
-
-    [![Schema](./images/tables_structure.png)]
+    ![Schema](./images/tables_structure.png)
 
 - **BigQuery**
     The same schema can be recreated in Google BigQuery for you to test the assistant. 
