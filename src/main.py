@@ -86,7 +86,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="SQL Assistant")
     parser.add_argument(
         "--database",
-        choices=["postgres", "bigquery"],
+        choices=["postgresql", "bigquery"],
         required=True,
         help="Specify the database type: 'postgres' or 'bigquery'",
     )
