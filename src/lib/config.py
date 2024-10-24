@@ -24,7 +24,7 @@ class BigQueryConfig:
         # Load BigQuery json directory path from .env file
         self.keys_dir = os.getenv('SERVICE_ACCOUNT_JSON_PATH')
         project_root = os.path.abspath(os.path.dirname(__file__))
-        self.keys_dir = os.path.join(project_root, ".." ,self.keys_dir)
+        self.keys_dir = os.path.join(project_root, "..", "..",self.keys_dir)
 
         # Check if the directory exists
         if not os.path.isdir(self.keys_dir):
@@ -35,15 +35,8 @@ class BigQueryConfig:
         if not json_files:
             raise FileNotFoundError(f"No JSON files found in directory {self.keys_dir}")
 
-        self.keys_path = os.path.join(self.keys_dir, json_files[0])
-
-        # Open and load the JSON file
-        try:
-            with open(self.keys_path, 'r') as json_file:
-                self.service_account_json = json.load(json_file)
-                self.dataset_id = os.getenv('BIGQUERY_DATASET_ID')
-        except json.JSONDecodeError:
-            raise ValueError(f"File at {self.keys_path} is not a valid JSON file")
-        
+        self.service_account_json = os.path.join(self.keys_dir, json_files[0])
+        self.dataset_id = os.getenv('BIGQUERY_DATASET_ID')
+    
 
 bigquery_config = BigQueryConfig()

@@ -59,16 +59,32 @@ az login
 ./set_up.sh run_all
 ```
 
-## PostgreSQL Database
-We provide a sample PostgreSQL tables that you can use to test the assistant. 
+## Supported Databases:
 
-```python
-python3 util/create-sample-database.py
-```
+- **PostgreSQL Database**
+    We provide a sample PostgreSQL tables that you can use to test the assistant. 
 
-### Table's Schema
+    ```python
+    python3 util/create-sample-database.py
+    ```
 
-[![Schema](./images/tables_structure.png)]
+    - Table's Schema
+
+    [![Schema](./images/tables_structure.png)]
+
+- **BigQuery**
+    We provide a sample PostgreSQL tables that you can use to test the assistant. 
+
+    ```python
+    python3 util/create-sample-database-bigquery.py
+    ```
+
+    You must provide your [service-account.json](./service-account/)
+
+    - Table's Schema
+
+    [![Schema](./images/tables_structure.png)]
+
 
 ## Contributing
 

@@ -1,0 +1,141 @@
+{
+    "name": "__indexName__",
+    "fields": [
+        {
+            "name": "id",
+            "type": "Edm.String",
+            "searchable": false,
+            "filterable": true,
+            "retrievable": true,
+            "stored": true,
+            "sortable": true,
+            "facetable": true,
+            "key": true,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "analyzer": null,
+            "normalizer": null,
+            "dimensions": null,
+            "vectorSearchProfile": null,
+            "vectorEncoding": null,
+            "synonymMaps": []
+        },
+        {
+            "name": "question",
+            "type": "Edm.String",
+            "searchable": true,
+            "filterable": false,
+            "retrievable": true,
+            "sortable": false,
+            "facetable": false,
+            "key": false,
+            "analyzer": "en.microsoft"
+        },
+        {
+            "name": "vector",
+            "type": "Collection(Edm.Single)",
+            "searchable": true,
+            "filterable": false,
+            "retrievable": true,
+            "stored": true,
+            "sortable": false,
+            "facetable": false,
+            "key": false,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "analyzer": null,
+            "normalizer": null,
+            "dimensions": 1536,
+            "vectorSearchProfile": "myHnswProfile",
+            "vectorEncoding": null,
+            "synonymMaps": []
+        },
+        {
+            "name": "bigquery",
+            "type": "Edm.String",
+            "searchable": true,
+            "filterable": false,
+            "retrievable": true,
+            "sortable": false,
+            "facetable": false,
+            "key": false,
+            "analyzer": "en.microsoft"
+        }
+    ],
+  "scoringProfiles": [],
+  "corsOptions": null,
+  "suggesters": [],
+  "analyzers": [],
+  "normalizers": [],
+  "tokenizers": [],
+  "tokenFilters": [],
+  "charFilters": [],
+  "encryptionKey": null,
+  "similarity": {
+    "@odata.type": "#Microsoft.Azure.Search.BM25Similarity",
+    "k1": null,
+    "b": null
+  },
+  "semantic": {
+    "defaultConfiguration": null,
+    "configurations": [
+      {
+        "name": "documents-index-semantic-config",
+        "prioritizedFields": {
+          "titleField": {
+            "fieldName": "question"
+          },
+          "prioritizedContentFields": [
+            {
+              "fieldName": "question"
+            }
+          ],
+          "prioritizedKeywordsFields": [
+            {
+              "fieldName": "question"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "vectorSearch": {
+    "algorithms": [
+      {
+        "name": "myHnsw",
+        "kind": "hnsw",
+        "hnswParameters": {
+          "metric": "cosine",
+          "m": 5,
+          "efConstruction": 300,
+          "efSearch": 400
+        },
+        "exhaustiveKnnParameters": null
+      },
+      {
+        "name": "myExhaustiveKnn",
+        "kind": "exhaustiveKnn",
+        "hnswParameters": null,
+        "exhaustiveKnnParameters": {
+          "metric": "cosine"
+        }
+      }
+    ],
+    "profiles": [
+      {
+        "name": "myHnswProfile",
+        "algorithm": "myHnsw",
+        "vectorizer": null,
+        "compression": null
+      },
+      {
+        "name": "myExhaustiveKnnProfile",
+        "algorithm": "myExhaustiveKnn",
+        "vectorizer": null,
+        "compression": null
+      }
+    ],
+    "vectorizers": [],
+    "compressions": []
+  }
+}

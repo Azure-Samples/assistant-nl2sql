@@ -1,10 +1,10 @@
 import os
 from openai import AzureOpenAI
 from lib.assistant import AIAssistant
-from lib.tools import GetDBSchema, RunSQLQuery, FetchDistinctValues, FetchSimilarValues, ListTables
+from lib.tools_postgres import GetDBSchema, RunSQLQuery, FetchDistinctValues, FetchSimilarValues, ListTables
 
 class SQLAssistant:
-    def __init__(self):
+    def __init__(self, instractions_file_name="instructions.jinja2"):
         self.functions = [
             GetDBSchema(), 
             RunSQLQuery(), 
@@ -17,6 +17,7 @@ class SQLAssistant:
         self.instructions = self.load_instructions()
         self.model = os.getenv("AZURE_OPENAI_MODEL_NAME")
         self.assistant = self.create_assistant()
+        self.instructions_file_name = instractions_file_name
 
     def create_client(self):
         return AzureOpenAI(
@@ -26,7 +27,7 @@ class SQLAssistant:
         )
 
     def load_instructions(self):
-        instructions_path = os.path.join(os.path.dirname(__file__), "instructions", "instructions.jinja2")
+        instructions_path = os.path.join(os.path.dirname(__file__), "instructions", self.instructions_file_name)
         with open(instructions_path) as file:
             return file.read()
 
@@ -47,5 +48,5 @@ class SQLAssistant:
 
 # Main function
 if __name__ == "__main__":
-    sql_assistant = SQLAssistant()
+    sql_assistant = SQLAssistant("instructions_bigquery.jinja2")
     sql_assistant.chat()

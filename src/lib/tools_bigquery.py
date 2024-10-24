@@ -1,7 +1,6 @@
 from google.cloud import bigquery
 from .function import Function, Property
 from .config import bigquery_config as config
-import os
 
 class GetDBSchema(Function):
     def __init__(self):
@@ -56,12 +55,6 @@ class RunSQLQuery(Function):
             description="Run a SQL query on the BigQuery dataset",
             parameters=[
                 Property(
-                    name="table_name",
-                    description="The table name to run the query on",
-                    type="string",
-                    required=True,
-                ),
-                Property(
                     name="query",
                     description="The SQL query to run",
                     type="string",
@@ -69,7 +62,7 @@ class RunSQLQuery(Function):
                 ),
             ]
         )
-    def function(self, table_name, query):
+    def function(self, query):
         try:
             client = bigquery.Client.from_service_account_json(config.service_account_json)
             query_job = client.query(query)

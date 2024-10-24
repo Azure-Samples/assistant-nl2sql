@@ -1,6 +1,5 @@
 #!/bin/bash
-
-prefix="demoaiassistant"
+prefix="demobigqueryaiassistant"
 location="eastus2"
 
 subscription_id=$(az account show --query id --output tsv)
@@ -15,6 +14,11 @@ db_server_name="${prefix}pgserver"
 db_name="${prefix}database"
 db_user="${prefix}user"
 db_password=$(openssl rand -base64 12)
+
+searchServiceName=$ai_resource_name"-search"
+searchServiceApiVersion=2024-09-01-preview
+indexName="queries"
+
 
 function create_resource_group() {
     echo "Creating resource group: $ai_resource_name_resource_group_name"
@@ -76,8 +80,29 @@ function create_postgresql() {
 
     fqdn=$(az postgres server show --resource-group $ai_resource_name_resource_group_name --name $db_server_name --query "fullyQualifiedDomainName" --output tsv)
     connection_string="postgres://$db_user:$db_password@$fqdn:5432/$db_name"
+}
 
-    echo "Creating .env file"
+# Create the Azure Search Index
+function create_search_service(){
+    # Create the Azure Search Index
+    az search service create \
+    --name $searchServiceName \
+    --resource-group $ai_resource_name_resource_group_name \
+    --sku Standard \
+    --partition-count 1 \
+    --replica-count 1 \
+    --semantic-search free
+
+    searchEndpoint=$(az search service show --name $searchServiceName --resource-group $ai_resource_name_resource_group_name --query endpoint --output tsv)
+    searchAdminKey=$(az search admin-key show --resource-group $ai_resource_name_resource_group_name --service-name $searchServiceName --query primaryKey --output tsv)
+
+    # Create the index for the files and their metadata.
+    cat "./src/index/deploy-index.json" | \
+    awk '{sub(/__indexName__/,"'$indexname'")}1' | \
+    curl -X PUT "https://$searchServiceName.search.windows.net/indexes/$indexName?api-version=$searchServiceApiVersion" -H "Content-Type: application/json" -H "api-key: $searchAdminKey" -d @-
+}
+
+function create_env(){    echo "Creating .env file"
     echo "# Please do not share this file, or commit this file to the repository" > .env
     echo "# This file is used to store the environment variables for the project for demos and testing only" >> .env
     echo "# delete this file when done with demos, or if you are not using it" >> .env
@@ -96,19 +121,24 @@ function create_postgresql() {
 }
 
 function load_data() {
-    echo "Loading data"
-    python src/utils/load_data.py
+    echo "Loading data to bigquery"
+    script_to_run="src/utils/create-sample-database-bigquery.py"
+    python $script_to_run
+
+    echo "Loading data to AI Search"
+    script_to_run="util/load-queries-to-search.py"
 }
 
 function run_all() {
     create_resource_group
-    create_hub
-    create_project
-    create_ai_service
-    deploy_models
-    add_connection_to_hub
-    create_postgresql
-    load_data
+    # create_hub
+    # create_project
+    # create_ai_service
+    # deploy_models
+    # add_connection_to_hub
+    # create_postgresql
+    create_search_service
+    # load_data
 }
 
 case $1 in
@@ -132,6 +162,9 @@ case $1 in
         ;;
     create_postgresql)
         create_postgresql
+        ;;
+    create_search_service)
+        create_search_service
         ;;
     load_data)
         load_data
