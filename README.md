@@ -70,7 +70,6 @@ az login
 ./set_up.sh run_bigquery
 ```
 
-
 ## Supported Databases:
 
 - **PostgreSQL Database**
@@ -80,7 +79,7 @@ az login
     python3 util/create-sample-database.py
     ```
 
-    - Table's Schema<br>
+    - Table's Schema <br>
     ![Schema](./images/tables_structure.png)
 
 - **BigQuery**
@@ -93,6 +92,7 @@ az login
     Save your service-account [inside](./service-account/). 
     For more inforamtion [see](https://cloud.google.com/iam/docs/service-accounts-create)
 
+**Note:** If you ran the shell scripts that create the infrastructure, the data has already been created for you, **NO NEED TO RUN THESE SCRIPTS AGAIN** 
 
 ## Contributing
 
