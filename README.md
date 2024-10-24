@@ -73,17 +73,14 @@ az login
     [![Schema](./images/tables_structure.png)]
 
 - **BigQuery**
-    We provide a sample PostgreSQL tables that you can use to test the assistant. 
+    The same schema can be recreated in Google BigQuery for you to test the assistant. 
 
     ```python
     python3 util/create-sample-database-bigquery.py
     ```
 
-    You must provide your [service-account.json](./service-account/)
-
-    - Table's Schema
-
-    [![Schema](./images/tables_structure.png)]
+    Save your service-account [inside](./service-account/). 
+    For more inforamtion [see](https://cloud.google.com/iam/docs/service-accounts-create)
 
 
 ## Contributing
