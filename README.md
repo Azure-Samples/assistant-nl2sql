@@ -81,6 +81,7 @@ az login
     ```
 
     - Table's Schema
+    
     ![Schema](./images/tables_structure.png)
 
 - **BigQuery**
