@@ -1,5 +1,5 @@
-question,bigquery
-"¿Qué vendedor ha vendido la mayor cantidad de productos en el último año, y cuál es la cantidad total vendida por ese vendedor?'","SELECT
+question,query
+"ï¿½Quï¿½ vendedor ha vendido la mayor cantidad de productos en el ï¿½ltimo aï¿½o, y cuï¿½l es la cantidad total vendida por ese vendedor?'","SELECT
     s.seller_name,
     SUM(st.quantity) AS total_quantity_sold
   FROM
@@ -10,7 +10,7 @@ question,bigquery
   ORDER BY
     total_quantity_sold DESC
   LIMIT 1;'"
-"¿Cuál es el precio promedio de los productos vendidos por cada vendedor, y cómo se compara con el precio promedio general de todos los productos?'","WITH SellerAveragePrices AS (
+"ï¿½Cuï¿½l es el precio promedio de los productos vendidos por cada vendedor, y cï¿½mo se compara con el precio promedio general de todos los productos?'","WITH SellerAveragePrices AS (
   SELECT
       s.seller_name,
       AVG(p.product_price) AS average_product_price
@@ -35,8 +35,41 @@ SELECT
     CROSS JOIN OverallAveragePrice AS oap
   ORDER BY
     sap.seller_name;'"
-"¿Qué categoría de producto tiene el ingreso promedio de ventas más alto por transacción, y cuál es el ingreso promedio para esa categoría?¿Cuál es el precio promedio de los productos vendidos por cada vendedor, y cómo se compara con el precio promedio general de todos los productos?'","SELECT    p.product_category,    AVG(st.quantity * p.product_price) AS average_revenue_per_transaction  FROM    `sales_sample_db.products` AS p    INNER JOIN `sales_sample_db.sales_transaction` AS st ON p.product_id = st.product_id  GROUP BY 1  ORDER BY    average_revenue_per_transaction DESC  LIMIT 1;WITH SellerAveragePrices AS (  SELECT      s.seller_name,      AVG(p.product_price) AS average_product_price    FROM      `sales_sample_db.sellers` AS s      INNER JOIN `sales_sample_db.sales_transaction` AS st ON s.seller_id = st.seller_id      INNER JOIN `sales_sample_db.products` AS p ON st.product_id = p.product_id    GROUP BY 1), OverallAveragePrice AS (  SELECT      AVG(product_price) AS overall_average_price    FROM      `sales_sample_db.products`)SELECT    sap.seller_name,    sap.average_product_price,    oap.overall_average_price,    sap.average_product_price - oap.overall_average_price AS price_difference  FROM    SellerAveragePrices AS sap    CROSS JOIN OverallAveragePrice AS oap  ORDER BY    sap.seller_name;'"
-" ¿Cuál es el total acumulado de ingresos por ventas para cada producto a lo largo del tiempo, y cuál es el ingreso promedio por ventas para cada producto en los últimos 3 meses?'","WITH ProductSales AS (
+"ï¿½Quï¿½ categorï¿½a de producto tiene el ingreso promedio de ventas mï¿½s alto por transacciï¿½n, y cuï¿½l es el ingreso promedio para esa categorï¿½a?ï¿½Cuï¿½l es el precio promedio de los productos vendidos por cada vendedor, y cï¿½mo se compara con el precio promedio general de todos los productos?'","SELECT
+    p.product_category,
+    AVG(st.quantity * p.product_price) AS average_revenue_per_transaction
+  FROM
+    `sales_sample_db.products` AS p
+    INNER JOIN `sales_sample_db.sales_transaction` AS st ON p.product_id = st.product_id
+  GROUP BY 1
+  ORDER BY
+    average_revenue_per_transaction DESC
+  LIMIT 1;WITH SellerAveragePrices AS (
+  SELECT
+      s.seller_name,
+      AVG(p.product_price) AS average_product_price
+    FROM
+      `sales_sample_db.sellers` AS s
+      INNER JOIN `sales_sample_db.sales_transaction` AS st ON s.seller_id = st.seller_id
+      INNER JOIN `sales_sample_db.products` AS p ON st.product_id = p.product_id
+    GROUP BY 1
+), OverallAveragePrice AS (
+  SELECT
+      AVG(product_price) AS overall_average_price
+    FROM
+      `sales_sample_db.products`
+)
+SELECT
+    sap.seller_name,
+    sap.average_product_price,
+    oap.overall_average_price,
+    sap.average_product_price - oap.overall_average_price AS price_difference
+  FROM
+    SellerAveragePrices AS sap
+    CROSS JOIN OverallAveragePrice AS oap
+  ORDER BY
+    sap.seller_name;'"
+" ï¿½Cuï¿½l es el total acumulado de ingresos por ventas para cada producto a lo largo del tiempo, y cuï¿½l es el ingreso promedio por ventas para cada producto en los ï¿½ltimos 3 meses?'","WITH ProductSales AS (
   SELECT
       p.product_name,
       st.transaction_date,
@@ -56,7 +89,7 @@ SELECT
   ORDER BY
     product_name,
     transaction_date;'"
-"¿Qué productos han sido vendidos por la mayor cantidad de vendedores, y cuántos vendedores han vendido cada uno de esos productos?'","SELECT
+"ï¿½Quï¿½ productos han sido vendidos por la mayor cantidad de vendedores, y cuï¿½ntos vendedores han vendido cada uno de esos productos?'","SELECT
     p.product_name,
     COUNT(DISTINCT st.seller_id) AS seller_count
   FROM
@@ -65,7 +98,7 @@ SELECT
   GROUP BY 1
   ORDER BY
     seller_count DESC;'"
-"¿Cuál es la cantidad promedio de productos vendidos por transacción para cada vendedor, y qué vendedor tiene la cantidad promedio más alta vendida por transacción?'","SELECT
+"ï¿½Cuï¿½l es la cantidad promedio de productos vendidos por transacciï¿½n para cada vendedor, y quï¿½ vendedor tiene la cantidad promedio mï¿½s alta vendida por transacciï¿½n?'","SELECT
     s.seller_name,
     AVG(st.quantity) AS average_quantity_per_transaction
   FROM
@@ -73,7 +106,7 @@ SELECT
     INNER JOIN `sales_sample_db.sales_transaction` AS st ON s.seller_id = st.seller_id
   GROUP BY 1
   ORDER BY'"
-¿Cuál es el porcentaje de productos en stock para cada producto?',"SELECT
+ï¿½Cuï¿½l es el porcentaje de productos en stock para cada producto?',"SELECT
     p.product_name,
     CASE
       WHEN p.in_stock THEN 100
@@ -90,7 +123,7 @@ SELECT
     INNER JOIN `sales_sample_db.sales_transaction` AS st ON s.seller_id = st.seller_id
   GROUP BY 1
   ORDER BY'"
-"¿Cuál es el producto más vendido en cada mes, y cuál es la cantidad total vendida de ese producto en cada mes?¿Cuál es el porcentaje de productos en stock para cada producto?'","WITH MonthlySales AS (
+"ï¿½Cuï¿½l es el producto mï¿½s vendido en cada mes, y cuï¿½l es la cantidad total vendida de ese producto en cada mes?ï¿½Cuï¿½l es el porcentaje de productos en stock para cada producto?'","WITH MonthlySales AS (
   SELECT
       p.product_name,
       EXTRACT(MONTH FROM st.transaction_date) AS order_month,
@@ -110,8 +143,38 @@ SELECT
   ORDER BY
     order_month,
     rank;'"
-" ¿Qué vendedores han vendido productos con un descuento promedio mayor al 10%, y cuál es el descuento promedio para cada uno de esos vendedores?¿Cuál es el producto más vendido en cada mes, y cuál es la cantidad total vendida de ese producto en cada mes?¿Cuál es el porcentaje de productos en stock para cada producto?'","SELECT    s.seller_name,    AVG(od.discount_percentage) AS average_discount_percentage  FROM    `sales_sample_db.sellers` AS s    INNER JOIN `sales_sample_db.sales_transaction` AS st ON s.seller_id = st.seller_id    INNER JOIN `sales_sample_db.products` AS p ON st.product_id = p.product_id    INNER JOIN `order_details` AS od ON p.product_id = od.product_id  GROUP BY 1  HAVING AVG(od.discount_percentage) > 0.1  ORDER BY    average_discount_percentage DESC;WITH MonthlySales AS (  SELECT      p.product_name,      EXTRACT(MONTH FROM st.transaction_date) AS order_month,      SUM(st.quantity) AS total_quantity_sold    FROM      `sales_sample_db.products` AS p      INNER JOIN `sales_sample_db.sales_transaction` AS st ON p.product_id = st.product_id    GROUP BY 1, 2)SELECT    order_month,    product_name,    total_quantity_sold,    ROW_NUMBER() OVER (PARTITION BY order_month ORDER BY total_quantity_sold DESC) AS rank  FROM    MonthlySales  ORDER BY    order_month,    rank;'"
-"Cuál es el producto con el mayor número de transacciones en el último trimestre, y cuántas transacciones ha tenido ese producto?'","SELECT
+" ï¿½Quï¿½ vendedores han vendido productos con un descuento promedio mayor al 10%, y cuï¿½l es el descuento promedio para cada uno de esos vendedores?ï¿½Cuï¿½l es el producto mï¿½s vendido en cada mes, y cuï¿½l es la cantidad total vendida de ese producto en cada mes?ï¿½Cuï¿½l es el porcentaje de productos en stock para cada producto?'","SELECT
+    s.seller_name,
+    AVG(od.discount_percentage) AS average_discount_percentage
+  FROM
+    `sales_sample_db.sellers` AS s
+    INNER JOIN `sales_sample_db.sales_transaction` AS st ON s.seller_id = st.seller_id
+    INNER JOIN `sales_sample_db.products` AS p ON st.product_id = p.product_id
+    INNER JOIN `order_details` AS od ON p.product_id = od.product_id
+  GROUP BY 1
+  HAVING AVG(od.discount_percentage) > 0.1
+  ORDER BY
+    average_discount_percentage DESC;WITH MonthlySales AS (
+  SELECT
+      p.product_name,
+      EXTRACT(MONTH FROM st.transaction_date) AS order_month,
+      SUM(st.quantity) AS total_quantity_sold
+    FROM
+      `sales_sample_db.products` AS p
+      INNER JOIN `sales_sample_db.sales_transaction` AS st ON p.product_id = st.product_id
+    GROUP BY 1, 2
+)
+SELECT
+    order_month,
+    product_name,
+    total_quantity_sold,
+    ROW_NUMBER() OVER (PARTITION BY order_month ORDER BY total_quantity_sold DESC) AS rank
+  FROM
+    MonthlySales
+  ORDER BY
+    order_month,
+    rank;'"
+"Cuï¿½l es el producto con el mayor nï¿½mero de transacciones en el ï¿½ltimo trimestre, y cuï¿½ntas transacciones ha tenido ese producto?'","SELECT
     p.product_name,
     COUNT(st.transaction_id) AS transaction_count
   FROM

@@ -1,10 +1,17 @@
 #!/bin/bash
+### PARAMETERS ###
 prefix="demobigqueryaiassistant"
 location="eastus2"
+query_examples_file_name="example_bigqueries.csv"
+service_account_json_path="./service-account/"
+bigquery_project_id="sales_sample_db"
+### END OF PARAMETERS ###
 
+# Get the subscription id and the user id
 subscription_id=$(az account show --query id --output tsv)
 user_id=$(az ad signed-in-user show --query id --output tsv)
 
+# Set the variables
 ai_resource_name="$prefix"
 ai_resource_name_resource_group_name=$ai_resource_name"-rg"
 ai_resource_name_hub_name=$ai_resource_name"-hub"
@@ -14,11 +21,9 @@ db_server_name="${prefix}pgserver"
 db_name="${prefix}database"
 db_user="${prefix}user"
 db_password=$(openssl rand -base64 12)
-
 searchServiceName=$ai_resource_name"-search"
 searchServiceApiVersion=2024-09-01-preview
 indexName="queries"
-
 
 function create_resource_group() {
     echo "Creating resource group: $ai_resource_name_resource_group_name"
@@ -80,6 +85,15 @@ function create_postgresql() {
 
     fqdn=$(az postgres server show --resource-group $ai_resource_name_resource_group_name --name $db_server_name --query "fullyQualifiedDomainName" --output tsv)
     connection_string="postgres://$db_user:$db_password@$fqdn:5432/$db_name"
+
+    echo "Loading data to PostgreSQL"
+    python src/utils/create-sample-database.py
+
+}
+
+function create_bigquery() {
+    echo "Creating BigQuery datasets"
+    python $script_to_run src/utils/create-sample-database.py
 }
 
 # Create the Azure Search Index
@@ -100,6 +114,10 @@ function create_search_service(){
     cat "./src/index/deploy-index.json" | \
     awk '{sub(/__indexName__/,"'$indexname'")}1' | \
     curl -X PUT "https://$searchServiceName.search.windows.net/indexes/$indexName?api-version=$searchServiceApiVersion" -H "Content-Type: application/json" -H "api-key: $searchAdminKey" -d @-
+    
+    # Load the queries to the search index
+    echo "Load the queries to Search"
+    python src/utils/load-queries-to-search.py --data_file $query_examples_file_name
 }
 
 function create_env(){    echo "Creating .env file"
@@ -111,35 +129,56 @@ function create_env(){    echo "Creating .env file"
     echo 'AZURE_OPENAI_API_VERSION="2024-05-01-preview"' >> .env
     echo 'AZURE_OPENAI_MODEL_NAME="gpt-4o"' >> .env
     echo 'AZURE_OPENAI_EMBEDDING_MODEL_NAME="text-embedding-ada-002"' >> .env
-    echo "AZURE_POSTGRES_SERVER=$db_server_name" >> .env
-    echo "AZURE_POSTGRES_DATABASE=$db_name" >> .env
-    echo "AZURE_POSTGRES_USER=$db_user" >> .env
-    echo "AZURE_POSTGRES_PASSWORD=$db_password" >> .env
-    echo "AZURE_POSTGRES_CONNECTION_STRING=$connection_string" >> .env
+    if [ -n "$db_server_name" ]; then
+        echo "AZURE_POSTGRES_SERVER=$db_server_name" >> .env
+    fi
+    if [ -n "$db_name" ]; then
+        echo "AZURE_POSTGRES_DATABASE=$db_name" >> .env
+    fi
+    if [ -n "$db_user" ]; then
+        echo "AZURE_POSTGRES_USER=$db_user" >> .env
+    fi
+    if [ -n "$db_password" ]; then
+        echo "AZURE_POSTGRES_PASSWORD=$db_password" >> .env
+    fi
+    if [ -n "$connection_string" ]; then
+        echo "AZURE_POSTGRES_CONNECTION_STRING=$connection_string" >> .env
+    fi
     echo "AZURE_SUBSCRIPTION_ID=$subscription_id" >> .env
     echo "AZURE_RESOURCE_GROUP=$ai_resource_name_resource_group_name" >> .env
+
+    if [ -n "$service_account_json_path" ]; then
+        echo "SERVICE_ACCOUNT_JSON_PATH=$service_account_json_path" >> .env
+    fi
+    if [ -n "$BIGQUERY_PROJECT_ID" ]; then
+        echo "BIGQUERY_PROJECT_ID=$BIGQUERY_PROJECT_ID" >> .env
+    fi
+
+    echo "AZURE_SEARCH_SERVICE_ENDPOINT=$searchEndpoint" >> .env
+    echo "AZURE_SEARCH_ADMIN_KEY=$searchAdminKey" >> .env
+    echo "AZURE_SEARCH_INDEX_NAME=$indexName" >> .env
 }
 
-function load_data() {
-    echo "Loading data to bigquery"
-    script_to_run="src/utils/create-sample-database-bigquery.py"
-    python $script_to_run
-
-    echo "Loading data to AI Search"
-    script_to_run="util/load-queries-to-search.py"
-}
 
 function run_all() {
     create_resource_group
-    # create_hub
-    # create_project
-    # create_ai_service
-    # deploy_models
-    # add_connection_to_hub
-    # create_postgresql
+    create_hub
+    create_project
+    create_ai_service
+    deploy_models
+    add_connection_to_hub
+    create_env
     create_search_service
-    # load_data
+    case $1 in
+        run_postgresql)
+            create_postgresql
+            ;;
+        run_bigquery)
+            create_bigquery
+            ;;
+    esac
 }
+
 
 case $1 in
     create_resource_group)

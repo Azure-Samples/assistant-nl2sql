@@ -27,12 +27,17 @@ pip install -r requirements.txt
 
 ## Usage
 
-To use the tool, run the following command:
+To use the tool, run the following command (for a postgres assistant):
 
 ```bash
-python3 src/main.p --database postgres  
+python3 src/main.py --database postgres  
 ```
 Then, follow the on-screen instructions to input your natural language query.
+
+If you want a bigquery assistant, try:
+```bash
+python3 src/main.py --database bigquery 
+```
 
 ## Examples
 You can test the assistant with the following examples:
@@ -51,13 +56,20 @@ Show me the total sales amount for each seller
 ## Infrastructure
 You can use the shell script `set_up.sh` to set up the infrastructure on Azure. This script will create a resource group, a storage account, a container, and a PostgreSQL database. To run the script, you need to have the Azure CLI installed and be logged in. You can install the Azure CLI by following the instructions [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli).
 
-Please, pay attention on the costs of the resources created by the script. 
+Please, pay attention to the costs of the resources created by the script. 
 
+To create resources for the postgresql assistant 
 ```bash
 az login
-
-./set_up.sh run_all
+./set_up.sh run_postgresql
 ```
+
+To create resources for the bigquery assistant 
+```bash
+az login
+./set_up.sh run_bigquery
+```
+
 
 ## Supported Databases:
 

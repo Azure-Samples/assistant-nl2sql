@@ -51,7 +51,7 @@
             "synonymMaps": []
         },
         {
-            "name": "bigquery",
+            "name": "query",
             "type": "Edm.String",
             "searchable": true,
             "filterable": false,

@@ -6,6 +6,7 @@ from azure.search.documents import SearchClient
 from dotenv import load_dotenv
 import uuid
 from openai import AzureOpenAI
+import argparse
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -56,7 +57,7 @@ class AzureSearchIndexer:
                     "id": str(uuid.uuid4()),
                     "question": question,
                     "vector": self.get_embedding(question),
-                    "bigquery": query,
+                    "query": query,
                 }
 
                 documents.append(document)
@@ -71,4 +72,10 @@ class AzureSearchIndexer:
 
 if __name__ == "__main__":
     indexer = AzureSearchIndexer()
-    indexer.insert_data("./data/example_bigqueries.csv")
+    parser = argparse.ArgumentParser(description="Load queries to Azure Search")
+    parser.add_argument(
+        "--data_file", type=str, help="Path to the CSV file containing the data"
+    )
+    args = parser.parse_args()
+
+    indexer.insert_data(args.data_file)
