@@ -17,9 +17,7 @@ ai_resource_name_resource_group_name=$ai_resource_name"-rg"
 ai_resource_name_hub_name=$ai_resource_name"-hub"
 ai_resource_project_name=$ai_resource_name"-project"
 ai_resource_ai_service=$ai_resource_name"-aiservice"
-db_server_name="${prefix}pgserver"
-db_name="${prefix}database"
-db_user="${prefix}user"
+
 db_password=$(openssl rand -base64 12)
 searchServiceName=$ai_resource_name"-search"
 searchServiceApiVersion=2024-09-01-preview
@@ -51,9 +49,6 @@ function deploy_models() {
     echo "Deploying GPT-4o"
     az cognitiveservices account deployment create --name $ai_resource_ai_service --resource-group $ai_resource_name_resource_group_name --deployment-name "gpt-4o" --model-name "gpt-4o" --model-version "2024-05-13" --model-format "OpenAI" --sku-capacity "1" --sku-name "Standard" --capacity "100"
 
-    echo "Deploying GPT-4"
-    az cognitiveservices account deployment create --name $ai_resource_ai_service --resource-group $ai_resource_name_resource_group_name --deployment-name "gpt-4" --model-name "gpt-4" --model-format "OpenAI" --model-version "turbo-2024-04-09" --sku-capacity "1" --sku-name "GlobalStandard" --capacity "40"
-
     echo "Deploying Text-embedding-ada-002"
     az cognitiveservices account deployment create --name $ai_resource_ai_service --resource-group $ai_resource_name_resource_group_name --deployment-name "text-embedding-ada-002" --model-name "text-embedding-ada-002" --model-format "OpenAI" --model-version "2" --sku-capacity "1" --sku-name "Standard" --capacity "20"
 }
@@ -76,6 +71,10 @@ function add_connection_to_hub() {
 }
 
 function create_postgresql() {
+    db_server_name="${prefix}pgserver"
+    db_name="${prefix}database"
+    db_user="${prefix}user"
+
     echo "Creating PostgreSQL database"
     az postgres server create --resource-group $ai_resource_name_resource_group_name --name $db_server_name --location $location --admin-user $db_user --admin-password $db_password --sku-name B_Gen5_1
     az postgres db create --resource-group $ai_resource_name_resource_group_name --server-name $db_server_name --name $db_name
@@ -93,7 +92,7 @@ function create_postgresql() {
 
 function create_bigquery() {
     echo "Creating BigQuery datasets"
-    python $script_to_run src/utils/create-sample-database.py
+    python $script_to_run util/create-sample-database.py
 }
 
 # Create the Azure Search Index
@@ -116,8 +115,13 @@ function create_search_service(){
     curl -X PUT "https://$searchServiceName.search.windows.net/indexes/$indexName?api-version=$searchServiceApiVersion" -H "Content-Type: application/json" -H "api-key: $searchAdminKey" -d @-
     
     # Load the queries to the search index
+    echo "AZURE_SEARCH_SERVICE_ENDPOINT=$searchEndpoint" >> .env
+    echo "AZURE_SEARCH_ADMIN_KEY=$searchAdminKey" >> .env
+    echo "AZURE_SEARCH_INDEX_NAME=$indexName" >> .env
+
+
     echo "Load the queries to Search"
-    python src/utils/load-queries-to-search.py --data_file $query_examples_file_name
+    python util/load-queries-to-search.py --data_file $query_examples_file_name
 }
 
 function create_env(){    echo "Creating .env file"
@@ -152,11 +156,7 @@ function create_env(){    echo "Creating .env file"
     fi
     if [ -n "$BIGQUERY_PROJECT_ID" ]; then
         echo "BIGQUERY_PROJECT_ID=$BIGQUERY_PROJECT_ID" >> .env
-    fi
-
-    echo "AZURE_SEARCH_SERVICE_ENDPOINT=$searchEndpoint" >> .env
-    echo "AZURE_SEARCH_ADMIN_KEY=$searchAdminKey" >> .env
-    echo "AZURE_SEARCH_INDEX_NAME=$indexName" >> .env
+    fi 
 }
 
 
