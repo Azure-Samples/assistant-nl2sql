@@ -45,7 +45,12 @@ class GetDBSchema(Function):
                 f"{rows_str}\n"
             )
 
-        table_info = "\n\n".join(create_statements) + "\n\n" + sample_rows_info
+        table_info = (
+            f"Dataset is:{config.dataset_id}\n\n"
+            + "\n\n".join(create_statements)
+            + "\n\n"
+            + sample_rows_info
+        )
 
         return table_info
 

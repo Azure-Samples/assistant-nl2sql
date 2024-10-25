@@ -30,7 +30,6 @@ class SQLAssistant:
         self.instructions = self.load_instructions()
         self.model = os.getenv("AZURE_OPENAI_MODEL_NAME")
         self.assistant = self.create_assistant()
-        
 
     def create_client(self):
         return AzureOpenAI(
@@ -69,7 +68,7 @@ sql_functions = [
     FetchDistinctValues(),
     FetchSimilarValues(),
     ListTables(),
-    FetchSimilarQueries()
+    FetchSimilarQueries(),
 ]
 postgres_assistant = SQLAssistant(sql_functions, "instructions_postgres.jinja2")
 
@@ -81,7 +80,7 @@ bigquery_functions = [
     BigQueryFetchDistinctValues(),
     BigQueryFetchSimilarValues(),
     BigQueryListTables(),
-    FetchSimilarQueries()
+    FetchSimilarQueries(),
 ]
 bigquery_assistant = SQLAssistant(bigquery_functions, "instructions_bigquery.jinja2")
 

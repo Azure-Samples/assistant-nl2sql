@@ -8,6 +8,7 @@ from lib.tools_bigquery import (
     FetchDistinctValues,
     FetchSimilarValues,
 )
+from lib.tools_search import FetchSimilarQueries
 
 
 def test():
@@ -16,7 +17,8 @@ def test():
     # run_sql_query = RunSQLQuery()
     # list_tables = ListTables()
     # fetch_distinct_values = FetchDistinctValues()
-    fetch_similar_values = FetchSimilarValues()
+    # fetch_similar_values = FetchSimilarValues()
+    fetch_similar_queries = FetchSimilarQueries()
 
     # Call the function method
     # query="""SELECT
@@ -38,7 +40,9 @@ def test():
     #     ORDER BY 2
     #     """
 
-    print(fetch_similar_values.function("products", "product_category", "electro"))
+    print(
+        fetch_similar_queries.function("What is the average quantity per transaction?")
+    )
 
 
 if __name__ == "__main__":
