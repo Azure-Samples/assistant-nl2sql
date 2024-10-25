@@ -46,7 +46,7 @@ class FetchSimilarQueries(Function):
             search_vector = self.get_embedding(question)
             result = search_client.search(
                 question,
-                top=5,
+                top=3,
                 vector_queries=[VectorizedQuery(vector=search_vector, fields="vector")],
                 query_type="semantic",
                 semantic_configuration_name="documents-index-semantic-config",
