@@ -280,7 +280,7 @@ if __name__ == "__main__":
         description="Create and populate a sample BigQuery database."
     )
     parser.add_argument(
-        "dataset_name", type=str, help="The name of the dataset to create."
+        "--dataset_name", type=str, help="The name of the dataset to create."
     )
     args = parser.parse_args()
 

@@ -2,16 +2,16 @@
 ### PARAMETERS ###
 prefix="demobigqueryaiassistant"
 location="eastus2"
-query_examples_file_name="./data/example_bigqueries.csv"
-service_account_json_path="./service-account/"
-bigquery_project_id="sales_sample_db"
+query_examples_file_name="./data/example_bigqueries.csv"   # The file with the example queries to load to the search index
+service_account_json_path="./service-account/"         # FOR BIGQUERY: The path to the service account json file CAN BE '' IF NOT USING BIGQUERY
+bigquery_project_db="sales_sample_db"                 # FOR BIGQUERY: The name of the BigQuery project, CAN BE '' IF NOT USING BIGQUERY
 ### END OF PARAMETERS ###
 
-# Get the subscription id and the user id
+### Get the subscription id and the user id
 subscription_id=$(az account show --query id --output tsv)
 user_id=$(az ad signed-in-user show --query id --output tsv)
 
-# Set the variables
+###  Set the variables
 ai_resource_name="$prefix"
 ai_resource_name_resource_group_name=$ai_resource_name"-rg"
 ai_resource_name_hub_name=$ai_resource_name"-hub"
@@ -22,6 +22,7 @@ searchServiceName=$ai_resource_name"-search"
 searchServiceApiVersion=2024-09-01-preview
 indexName="queries"
 
+###  Get the type of database to use
 database_type=$2
 
 function create_resource_group() {
@@ -94,7 +95,7 @@ function create_postgresql() {
 
 function create_bigquery() {
     echo "Creating BigQuery datasets"
-    python util/create-sample-database-bigquery.py
+    python util/create-sample-database-bigquery.py --dataset_name $bigquery_project_db
 }
 
 # Create the Azure Search Index
@@ -161,14 +162,14 @@ function create_env(){    echo "Creating .env file"
 
 
 function run_all() {
-    # create_resource_group
-    # create_hub
-    # create_project
-    # create_ai_service
-    # deploy_models
-    # add_connection_to_hub
-    # create_env
-    # create_search_service
+    create_resource_group
+    create_hub
+    create_project
+    create_ai_service
+    deploy_models
+    add_connection_to_hub
+    create_env
+    create_search_service
     case $database_type in
         postgresql)
             create_postgresql
@@ -177,7 +178,7 @@ function run_all() {
             create_bigquery
             ;;
         *)
-        echo "Unsupported database type: $2"
+        echo "Unsupported database type: $database_type"
         exit 1
         ;;
     esac
