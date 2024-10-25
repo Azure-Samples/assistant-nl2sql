@@ -64,7 +64,7 @@ az login
 ./set_up.sh run_all postgresql
 ```
 
-To create resources for the bigquery assistant:
+To create resources for the bigquery assistant:<br>
 You must have a service-account saved [inside here](./service-account/). 
 For more information [see](https://cloud.google.com/iam/docs/service-accounts-create).
 Then:
