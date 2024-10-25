@@ -44,7 +44,7 @@ class AzureSearchIndexer:
     def insert_data(self, data_file):
         logger.info(f"Reading data from file: {data_file}")
         documents = []
-        with open(data_file, "r") as file:
+        with open(data_file, "r", encoding='utf-8') as file:
             reader = csv.reader(file, delimiter=",")
             next(reader)
             for row in reader:
@@ -52,7 +52,7 @@ class AzureSearchIndexer:
                 query = row[1].replace('"""', "")
 
                 logger.info("Processing row...")
-
+          
                 document = {
                     "id": str(uuid.uuid4()),
                     "question": question,

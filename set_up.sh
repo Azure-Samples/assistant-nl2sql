@@ -163,25 +163,25 @@ function create_env(){    echo "Creating .env file"
 
 function run_all() {
     create_resource_group
-    create_hub
-    create_project
-    create_ai_service
-    deploy_models
-    add_connection_to_hub
-    create_env
+    # create_hub
+    # create_project
+    # create_ai_service
+    # deploy_models
+    # add_connection_to_hub
+    # create_env
     create_search_service
-    case $database_type in
-        postgresql)
-            create_postgresql
-            ;;
-        bigquery)
-            create_bigquery
-            ;;
-        *)
-        echo "Unsupported database type: $database_type"
-        exit 1
-        ;;
-    esac
+    # case $database_type in
+    #     postgresql)
+    #         create_postgresql
+    #         ;;
+    #     bigquery)
+    #         create_bigquery
+    #         ;;
+    #     *)
+    #     echo "Unsupported database type: $database_type"
+    #     exit 1
+    #     ;;
+    # esac
 }
 
 

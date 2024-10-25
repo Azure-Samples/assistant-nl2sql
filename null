@@ -1,0 +1,11 @@
+{
+  "id": "/subscriptions/06d043e2-5a2e-46bf-bf48-fffee525f377/resourceGroups/demobigqueryaiassistant-rg",
+  "location": "eastus2",
+  "managedBy": null,
+  "name": "demobigqueryaiassistant-rg",
+  "properties": {
+    "provisioningState": "Succeeded"
+  },
+  "tags": null,
+  "type": "Microsoft.Resources/resourceGroups"
+}
