@@ -162,3 +162,4 @@ cython_debug/
 .vscode/launch.json
 service-account/*
 !service-account/.gitkeep
+util/test.py
