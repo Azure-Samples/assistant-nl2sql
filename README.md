@@ -64,7 +64,10 @@ az login
 ./set_up.sh run_all postgresql
 ```
 
-To create resources for the bigquery assistant 
+To create resources for the bigquery assistant:
+You must have a service-account saved [inside here](./service-account/). 
+For more information [see](https://cloud.google.com/iam/docs/service-accounts-create).
+Then:
 ```bash
 az login
 ./set_up.sh run_all bigquery
@@ -88,9 +91,6 @@ az login
     ```python
     python3 util/create-sample-database-bigquery.py
     ```
-
-    Save your service-account [inside](./service-account/). 
-    For more inforamtion [see](https://cloud.google.com/iam/docs/service-accounts-create)
 
 **Note:** If you ran the shell scripts that create the infrastructure, the data has already been created for you, **NO NEED TO RUN THESE SCRIPTS AGAIN** 
 
