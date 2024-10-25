@@ -2,7 +2,7 @@
 ### PARAMETERS ###
 prefix="demobigqueryaiassistant"
 location="eastus2"
-query_examples_file_name="example_bigqueries.csv"
+query_examples_file_name="./data/example_bigqueries.csv"
 service_account_json_path="./service-account/"
 bigquery_project_id="sales_sample_db"
 ### END OF PARAMETERS ###
@@ -18,10 +18,11 @@ ai_resource_name_hub_name=$ai_resource_name"-hub"
 ai_resource_project_name=$ai_resource_name"-project"
 ai_resource_ai_service=$ai_resource_name"-aiservice"
 
-db_password=$(openssl rand -base64 12)
 searchServiceName=$ai_resource_name"-search"
 searchServiceApiVersion=2024-09-01-preview
 indexName="queries"
+
+database_type=$2
 
 function create_resource_group() {
     echo "Creating resource group: $ai_resource_name_resource_group_name"
@@ -74,6 +75,7 @@ function create_postgresql() {
     db_server_name="${prefix}pgserver"
     db_name="${prefix}database"
     db_user="${prefix}user"
+    db_password=$(openssl rand -base64 12)
 
     echo "Creating PostgreSQL database"
     az postgres server create --resource-group $ai_resource_name_resource_group_name --name $db_server_name --location $location --admin-user $db_user --admin-password $db_password --sku-name B_Gen5_1
@@ -86,13 +88,13 @@ function create_postgresql() {
     connection_string="postgres://$db_user:$db_password@$fqdn:5432/$db_name"
 
     echo "Loading data to PostgreSQL"
-    python src/utils/create-sample-database.py
+    python util/create-sample-database.py
 
 }
 
 function create_bigquery() {
     echo "Creating BigQuery datasets"
-    python $script_to_run util/create-sample-database.py
+    python util/create-sample-database-bigquery.py
 }
 
 # Create the Azure Search Index
@@ -106,7 +108,6 @@ function create_search_service(){
     --replica-count 1 \
     --semantic-search free
 
-    searchEndpoint=$(az search service show --name $searchServiceName --resource-group $ai_resource_name_resource_group_name --query endpoint --output tsv)
     searchAdminKey=$(az search admin-key show --resource-group $ai_resource_name_resource_group_name --service-name $searchServiceName --query primaryKey --output tsv)
 
     # Create the index for the files and their metadata.
@@ -115,10 +116,9 @@ function create_search_service(){
     curl -X PUT "https://$searchServiceName.search.windows.net/indexes/$indexName?api-version=$searchServiceApiVersion" -H "Content-Type: application/json" -H "api-key: $searchAdminKey" -d @-
     
     # Load the queries to the search index
-    echo "AZURE_SEARCH_SERVICE_ENDPOINT=$searchEndpoint" >> .env
+    echo "AZURE_SEARCH_SERVICE_ENDPOINT=https://$searchServiceName.search.windows.net" >> .env
     echo "AZURE_SEARCH_ADMIN_KEY=$searchAdminKey" >> .env
     echo "AZURE_SEARCH_INDEX_NAME=$indexName" >> .env
-
 
     echo "Load the queries to Search"
     python util/load-queries-to-search.py --data_file $query_examples_file_name
@@ -161,21 +161,25 @@ function create_env(){    echo "Creating .env file"
 
 
 function run_all() {
-    create_resource_group
-    create_hub
-    create_project
-    create_ai_service
-    deploy_models
-    add_connection_to_hub
-    create_env
-    create_search_service
-    case $2 in
+    # create_resource_group
+    # create_hub
+    # create_project
+    # create_ai_service
+    # deploy_models
+    # add_connection_to_hub
+    # create_env
+    # create_search_service
+    case $database_type in
         postgresql)
             create_postgresql
             ;;
         bigquery)
             create_bigquery
             ;;
+        *)
+        echo "Unsupported database type: $2"
+        exit 1
+        ;;
     esac
 }
 
