@@ -86,13 +86,14 @@ You can use the shell script `set_up.sh` to set up the infrastructure on Azure. 
 Please, pay attention to the costs of the resources created by the script. 
 
 - Edit the parameters section in [set_up.sh](set_up.sh)
+
 | Parameter  | Example | Description |
 | ---------|---------|---------|
 prefix | demoassistant | The prefix for all resources that will be created |
 location | eastus2 | The location where resources will be created |
 query_examples_file_name | ./data/examples.csv | The file with the curated example of queries
 secret_file_name | service-account.json | The service account secrets if using bigquery
-bigquery_dataset_id | sales_sample_db | The name of the dataset if using bigquery                 
+bigquery_dataset_id | sales_sample_db | The name of the dataset if using bigquery |                
    
 - To create resources for the postgresql assistant 
 ```bash
