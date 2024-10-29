@@ -1,10 +1,10 @@
 #!/bin/bash
 ### PARAMETERS ###
-prefix="demobigqueryaiassistant"
+prefix="demoassistant"
 location="eastus2"
-query_examples_file_name="./data/example_bigqueries.csv"   # The file with the example queries to load to the search index
+query_examples_file_name="./data/examples.csv"   # The file with the example queries to load to the search index
 secret_file_name="demomeli-439613-11b04c382041.json"        # FOR BIGQUERY: The path to the service account json file CAN BE '' IF NOT USING BIGQUERY
-bigquery_project_db="sales_sample_db"                 # FOR BIGQUERY: The name of the BigQuery project, CAN BE '' IF NOT USING BIGQUERY
+bigquery_project_db="sales_sample_db_2"                 # FOR BIGQUERY: The name of the BigQuery project, CAN BE '' IF NOT USING BIGQUERY
 app_name="bigassistant-app"                        # The name of the app
 ### END OF PARAMETERS ###
 
@@ -159,11 +159,11 @@ function create_env(){    echo "Creating .env file"
     echo "AZURE_SUBSCRIPTION_ID=$subscription_id" >> .env
     echo "AZURE_RESOURCE_GROUP=$ai_resource_name_resource_group_name" >> .env
 
-    if [ -n "$service_account_json_path" ]; then
+    if [ -n "$secret_file_name" ]; then
         echo "SERVICE_ACCOUNT_SECRET_NAME=$secret_file_name" >> .env
     fi
-    if [ -n "$BIGQUERY_PROJECT_ID" ]; then
-        echo "BIGQUERY_PROJECT_ID=$BIGQUERY_PROJECT_ID" >> .env
+    if [ -n "$bigquery_project_db" ]; then
+        echo "BIGQUERY_PROJECT_ID=$bigquery_project_db" >> .env
     fi 
 }
 

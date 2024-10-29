@@ -5,39 +5,20 @@ from google.cloud import bigquery
 from dotenv import load_dotenv
 from faker import Faker
 import argparse
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+from src.lib.config import bigquery_config as config
 
-## TO DO: AUTOMATE PROCEDURE FOR SIMILARITY CALCULATION
 
 class SampleDatabaseCreator:
     def __init__(self):
         load_dotenv(override=True)
 
-        # Load BigQuery json directory path from .env file
-        self.keys_dir = os.getenv("SERVICE_ACCOUNT_JSON_PATH")
-        project_root = os.path.abspath(os.path.dirname(__file__))
-        self.keys_dir = os.path.join(project_root, "..", self.keys_dir)
+        # Load BigQuery json directory path from config
+        if not config.service_account_json:
+            raise FileNotFoundError(f"Service account JSON directory not found")
 
-        # Check if the directory exists
-        if not os.path.isdir(self.keys_dir):
-            raise NotADirectoryError(
-                f"Service account JSON directory not found at {self.keys_dir}"
-            )
-
-        # Find the JSON file in the directory
-        json_files = [f for f in os.listdir(self.keys_dir) if f.endswith(".json")]
-        if not json_files:
-            raise FileNotFoundError(f"No JSON files found in directory {self.keys_dir}")
-
-        self.keys_path = os.path.join(self.keys_dir, json_files[0])
-
-        # Open and load the JSON file
-        try:
-            with open(self.keys_path, "r") as json_file:
-                self.keys = json.load(json_file)
-        except json.JSONDecodeError:
-            raise ValueError(f"File at {self.keys_path} is not a valid JSON file")
-
-        self.client = bigquery.Client.from_service_account_json(self.keys_path)
+        self.client = bigquery.Client.from_service_account_json(config.service_account_json)
 
     def create_dataset_and_tables(self, dataset_name):
         # Create new dataset
