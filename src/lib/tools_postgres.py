@@ -3,7 +3,6 @@ from psycopg2 import sql
 from .function import Function, Property
 from .config import config
 
-
 class GetDBSchema(Function):
     def __init__(self):
         super().__init__(
@@ -281,3 +280,7 @@ class FetchSimilarValues(Function):
             else:
                 print(f"Error fetching similar values: {e}")
                 return f"Error fetching similar values: {e}"
+
+
+
+## BIGQUERY FUNCTIONS

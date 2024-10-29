@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from pydantic import BaseModel
 from typing import Optional, Dict, List
 
+
 class Property(BaseModel):
     name: str
     type: str
