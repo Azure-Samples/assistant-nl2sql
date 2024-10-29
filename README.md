@@ -45,11 +45,9 @@ python src/main.py --database bigquery
 ```bash
 streamlit run app.py
 ```
-
+<br>
 - To deploy it as a WebApp:
-```bash
-streamlit run app.py
-```
+##TO DO:
 
 ## Examples
 You can test the assistant with the following examples:
@@ -91,7 +89,7 @@ az login
     We provide a sample PostgreSQL tables that you can use to test the assistant. 
 
     ```python
-    python3 util/create-sample-database.py
+    python util/create-sample-database.py
     ```
 
     - Table's Schema <br>
@@ -101,7 +99,7 @@ az login
     The same schema can be recreated in Google BigQuery for you to test the assistant. 
 
     ```python
-    python3 util/create-sample-database-bigquery.py
+    python util/create-sample-database-bigquery.py
     ```
 
 **Note:** If you ran the shell scripts that create the infrastructure, the data has already been created for you, **NO NEED TO RUN THESE SCRIPTS AGAIN** 
