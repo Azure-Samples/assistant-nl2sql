@@ -1,4 +1,4 @@
-﻿question,bigquery
+﻿question,query
 "¿Qué vendedor ha vendido la mayor cantidad de productos en el último año, y cuál es la cantidad total vendida por ese vendedor?'","SELECT
     s.seller_name,
     SUM(st.quantity) AS total_quantity_sold
