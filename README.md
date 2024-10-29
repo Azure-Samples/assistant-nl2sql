@@ -28,14 +28,14 @@ pip install -r requirements.txt
 ## Usage
 
 1. **From command line:** 
-To use the tool, run the following command (for a postgresql assistant):
+- To use the tool, run the following command (for a postgresql assistant):
 
 ```bash
 python src/main.py --database postgresql  
 ```
 Then, follow the on-screen instructions to input your natural language query.
 
-If you want a bigquery assistant, try:
+- If you want a bigquery assistant, try:
 ```bash
 python src/main.py --database bigquery 
 ```
