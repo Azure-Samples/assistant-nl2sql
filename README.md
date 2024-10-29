@@ -39,7 +39,7 @@ If you want a bigquery assistant, try:
 ```bash
 python src/main.py --database bigquery 
 ```
-<br>
+
 2. **Using a streamlit app:**
 - To launch the app locally (for bigquery):
 ```bash
