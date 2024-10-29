@@ -27,16 +27,28 @@ pip install -r requirements.txt
 
 ## Usage
 
+1. **From command line:** 
 To use the tool, run the following command (for a postgresql assistant):
 
 ```bash
-python3 src/main.py --database postgresql  
+python src/main.py --database postgresql  
 ```
 Then, follow the on-screen instructions to input your natural language query.
 
 If you want a bigquery assistant, try:
 ```bash
-python3 src/main.py --database bigquery 
+python src/main.py --database bigquery 
+```
+
+2. **Using a streamlit app:**
+- To launch the app locally (for bigquery):
+```bash
+streamlit run app.py
+```
+
+- To deploy it as a WebApp:
+```bash
+streamlit run app.py
 ```
 
 ## Examples
