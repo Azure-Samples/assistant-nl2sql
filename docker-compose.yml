@@ -10,6 +10,7 @@ services:
       - service-account
     environment:
       - SERVICE_ACCOUNT_SECRET_NAME=/mnt/secrets/service-account
+      - BIGQUERY_DATASET_ID=${BIGQUERY_DATASET_ID}
       - AZURE_OPENAI_KEY=${AZURE_OPENAI_KEY}
       - AZURE_OPENAI_API_VERSION=${AZURE_OPENAI_API_VERSION}
       - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT}

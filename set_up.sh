@@ -4,7 +4,7 @@ prefix="demoassistant"
 location="eastus2"
 query_examples_file_name="./data/examples.csv"   # The file with the example queries to load to the search index
 secret_file_name="demomeli-439613-11b04c382041.json"        # FOR BIGQUERY: The path to the service account json file CAN BE '' IF NOT USING BIGQUERY
-bigquery_project_db="sales_sample_db_2"                 # FOR BIGQUERY: The name of the BigQuery project, CAN BE '' IF NOT USING BIGQUERY
+bigquery_dataset_id="sales_sample_db_2"                 # FOR BIGQUERY: The name of the BigQuery project, CAN BE '' IF NOT USING BIGQUERY
 app_name="bigassistant-app"                        # The name of the app
 ### END OF PARAMETERS ###
 
@@ -162,8 +162,8 @@ function create_env(){    echo "Creating .env file"
     if [ -n "$secret_file_name" ]; then
         echo "SERVICE_ACCOUNT_SECRET_NAME=$secret_file_name" >> .env
     fi
-    if [ -n "$bigquery_project_db" ]; then
-        echo "BIGQUERY_PROJECT_ID=$bigquery_project_db" >> .env
+    if [ -n "$bigquery_dataset_id" ]; then
+        echo "BIGQUERY_DATASET_ID=$bigquery_dataset_id" >> .env
     fi 
 }
 
