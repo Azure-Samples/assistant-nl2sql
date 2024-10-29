@@ -14,7 +14,7 @@ class AIAssistant:
         verbose: bool = False,
         name: str = "AI Assistant",
         description: str = "An AI Assistant",
-        instrunctions: str = None,
+        instructions: str = None,
         model: str = None,
         tools: list[dict] = None,
         functions: list[Function] = None,
@@ -26,7 +26,7 @@ class AIAssistant:
         self.functions = []
         self.name = name
         self.description = description
-        self.instrunctions = instrunctions
+        self.instructions = instructions
         self.model = model
         self.tools = tools
         self.functions = functions
@@ -34,7 +34,7 @@ class AIAssistant:
         self.assistant = self.client.beta.assistants.create(
             name=self.name,
             description=self.description,
-            instructions=self.instrunctions,
+            instructions=self.instructions,
             model=self.model,
             tools=self.tools,
         )

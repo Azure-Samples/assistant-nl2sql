@@ -47,8 +47,8 @@ Then, follow the on-screen instructions to input your natural language query.
 python src/main.py --database bigquery 
 ```
 
-2. **Using a streamlit app:**
-- To launch the app locally (for bigquery):
+2. **Using a streamlit app for front end:**
+- To launch the app locally:
 ```bash
 streamlit run app.py
 ```

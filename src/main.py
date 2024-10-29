@@ -51,7 +51,7 @@ class SQLAssistant:
             verbose=True,
             name="AI Assistant",
             description="An AI Assistant",
-            instrunctions=self.instructions,
+            instructions=self.instructions,
             model=self.model,
             tools=self.tools,
             functions=self.functions,
