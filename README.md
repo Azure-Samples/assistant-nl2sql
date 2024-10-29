@@ -14,7 +14,7 @@ Assistant NL2SQL is a natural language processing tool that converts natural lan
 
 ## Stack <br>
 ![Stacl](./images/assistants_stack.png)
-
+- Use Azure Open AI Assistants API for AI Orchestration, on top of GPT4o Model
 - Built our own [tools postgres](src/lib/tools_postgres.py) and [tools bigquery](src/lib/tools_postgres.py) using Function Calling, to interact with the databases
 
 
