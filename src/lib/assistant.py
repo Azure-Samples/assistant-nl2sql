@@ -2,6 +2,7 @@ from openai import AzureOpenAI
 from openai.types.beta import Thread
 from openai.types.beta.threads import Run, Message
 from .function import Function, FunctionCall
+from .event_handler import StreamlitEventHandler
 import json
 import time
 
@@ -37,6 +38,7 @@ class AIAssistant:
             model=self.model,
             tools=self.tools,
         )
+        self.assistant_id = self.assistant.id
 
     def create_thread(self) -> Thread:
         thread = self.client.beta.threads.create()
@@ -74,7 +76,7 @@ class AIAssistant:
                         function_call=function_call
                     )
                     if self.verbose:
-                        print(f"Function {function_name} responsed: {response}")
+                        print(f"Function {function_name} responded: {response}")
                     tool_outputs.append(
                         {
                             "tool_call_id": call_id,
@@ -128,13 +130,19 @@ class AIAssistant:
         message_content.value += "\n" + "\n".join(citations)
         return message_content.value
 
-    def extract_run_message(self, run: Run, thread_id: str) -> str:
+    def extract_run_message(
+        self, run: Run, thread_id: str, output_role: bool = True
+    ) -> str:
         messages = self.client.beta.threads.messages.list(
             thread_id=thread_id,
         ).data
         for message in messages:
             if message.run_id == run.id:
-                return f"{message.role}: " + self.format_message(message=message)
+                return (
+                    f"{message.role}: " + self.format_message(message=message)
+                    if output_role
+                    else self.format_message(message=message)
+                )
         return "Assistant: No message found"
 
     def extract_query(self, arguments: list[dict]) -> str:
@@ -233,3 +241,81 @@ class AIAssistant:
                     self.delete_file(file_id=file)
             self.client.beta.threads.delete(thread_id=thread.id)
             self.client.beta.assistants.delete(assistant_id=self.assistant.id)
+
+    def create_message(self, thread_id: str, role: str, question: str):
+        self.client.beta.threads.messages.create(
+            thread_id=thread_id, role="user", content=question
+        )
+
+    def create_response_with_handler(
+        self,
+        question: str,
+        event_handler: StreamlitEventHandler,
+        thread_id: str = None,
+        run_instructions: str = None,
+        max_retries: int = 5,
+        retry_delay: int = 20,
+    ) -> str:
+        if thread_id is None:
+            thread = self.create_thread()
+            thread_id = thread.id
+
+        self.client.beta.threads.messages.create(
+            thread_id=thread_id, role="user", content=question
+        )
+
+        retries = 0
+
+        while retries < max_retries:
+            run = self.client.beta.threads.runs.create(
+                thread_id=thread_id,
+                assistant_id=self.assistant.id,
+                instructions=run_instructions,
+            )
+            arguments = []
+
+            while run.status not in ["completed", "failed"]:
+                run = self.client.beta.threads.runs.retrieve(
+                    thread_id=thread_id, run_id=run.id
+                )
+                if run.status == "expired":
+                    raise Exception(
+                        f"Run expired when calling {self.get_required_functions_names(run=run)}"
+                    )
+                if run.status == "requires_action":
+                    tool_outputs, arguments = self.create_tool_outputs(
+                        run=run, functions=self.functions
+                    )
+                    run = self.client.beta.threads.runs.submit_tool_outputs(
+                        thread_id=thread_id,
+                        run_id=run.id,
+                        tool_outputs=tool_outputs,
+                    )
+                    event_handler.update_tools_called(
+                        arguments[-1].get("tool_call_name", "")
+                    )
+                    event_handler.update_tools_inputs(
+                        arguments[-1].get("arguments", "")
+                    )
+                    event_handler.update_tools_outputs(tool_outputs)
+                time.sleep(0.5)
+
+            if run.status == "failed":
+                retries += 1
+                print(
+                    f"Run failed. Retrying in {retry_delay} seconds... (Attempt {retries}/{max_retries})"
+                )
+                time.sleep(retry_delay)
+            else:
+                tokens = {
+                    "prompt_tokens": run.usage.prompt_tokens,
+                    "completion_tokens": run.usage.completion_tokens,
+                }
+                event_handler.update_final_answer(
+                    "\n"
+                    + self.extract_run_message(
+                        run=run, thread_id=thread_id, output_role=False
+                    ),
+                    tokens,
+                )
+                return

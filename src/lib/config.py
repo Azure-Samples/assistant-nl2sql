@@ -43,6 +43,7 @@ class BigQueryConfig:
 
         self.service_account_json = os.path.join(self.keys_dir, json_files[0])
         self.dataset_id = os.getenv("BIGQUERY_DATASET_ID")
+        self.project_id = json.load(open(self.service_account_json))["project_id"]
 
 
 bigquery_config = BigQueryConfig()

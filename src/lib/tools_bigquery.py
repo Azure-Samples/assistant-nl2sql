@@ -42,11 +42,11 @@ class GetDBSchema(Function):
             sample_rows_info += (
                 f"{limit} rows from {table.table_id} table:\n"
                 f"{columns_str}\n"
-                f"{rows_str}\n"
+                f"{rows_str}\n\n"
             )
 
         table_info = (
-            f"Dataset is:{config.dataset_id}\n\n"
+            f"Dataset is: {config.dataset_id}. You must use it to qualify the tables in your queries (e.g. {config.dataset_id}.table)\n\n"
             + "\n\n".join(create_statements)
             + "\n\n"
             + sample_rows_info
@@ -109,8 +109,14 @@ class FetchDistinctValues(Function):
             description="Fetch the first 10 distinct values of a specified column for a certain table",
             parameters=[
                 Property(
+                    name="dataset_id",
+                    description="The dataset id which contains the table",
+                    type="string",
+                    required=True
+                ),
+                Property(
                     name="table_name",
-                    description="The table name to fetch distinct values",
+                    description="The table name to fetch distinct values. NOTE: Must not contain the dataset id",
                     type="string",
                     required=True,
                 ),
@@ -123,14 +129,14 @@ class FetchDistinctValues(Function):
             ],
         )
 
-    def function(self, table_name, column_name):
+    def function(self, dataset_id, table_name, column_name):
         try:
             client = bigquery.Client.from_service_account_json(
                 config.service_account_json
             )
             query = f"""
                 SELECT {column_name}, COUNT(*) as qty
-                FROM `{config.dataset_id}.{table_name}`
+                FROM `{dataset_id}.{table_name}`
                 GROUP BY {column_name}
                 ORDER BY qty DESC
                 LIMIT 10
@@ -144,6 +150,12 @@ class FetchDistinctValues(Function):
 
             return result
 
+        except bigquery.NotFound:
+            # If the column is not found, list available columns
+            table_ref = client.dataset(config.dataset_id).table(table_name)
+            table_obj = client.get_table(table_ref)
+            available_columns = [field.name for field in table_obj.schema]
+            return f"Column '{column_name}' not found. Available columns: {', '.join(available_columns)}"
         except Exception as e:
             return f"Error fetching distinct values: {e}"
 
@@ -180,11 +192,12 @@ class FetchSimilarValues(Function):
             client = bigquery.Client.from_service_account_json(
                 config.service_account_json
             )
+
             query = f"""
                 SELECT {column_name},
-                       SIMILARITY(CAST({column_name} AS STRING), '{value}') AS similarity_score
+                        ROUND(utility.levenshtein(CAST({column_name} AS STRING), '{value}'),2) AS similarity_score
                 FROM `{config.dataset_id}.{table_name}`
-                WHERE SIMILARITY(CAST({column_name} AS STRING), '{value}') > 0.7
+                WHERE ROUND(utility.levenshtein(CAST({column_name} AS STRING), '{value}'),2) > 0.3
                 ORDER BY similarity_score DESC
                 LIMIT 10
             """

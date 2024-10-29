@@ -3,7 +3,7 @@
 prefix="demobigqueryaiassistant"
 location="eastus2"
 query_examples_file_name="./data/example_bigqueries.csv"   # The file with the example queries to load to the search index
-service_account_json_path="./service-account/"         # FOR BIGQUERY: The path to the service account json file CAN BE '' IF NOT USING BIGQUERY
+service_account_json_path="./secrets/"         # FOR BIGQUERY: The path to the service account json file CAN BE '' IF NOT USING BIGQUERY
 bigquery_project_db="sales_sample_db"                 # FOR BIGQUERY: The name of the BigQuery project, CAN BE '' IF NOT USING BIGQUERY
 ### END OF PARAMETERS ###
 
@@ -89,13 +89,13 @@ function create_postgresql() {
     connection_string="postgres://$db_user:$db_password@$fqdn:5432/$db_name"
 
     echo "Loading data to PostgreSQL"
-    python util/create-sample-database.py
+    python utils/create-sample-database.py
 
 }
 
 function create_bigquery() {
     echo "Creating BigQuery datasets"
-    python util/create-sample-database-bigquery.py --dataset_name $bigquery_project_db
+    python utils/create-sample-database-bigquery.py --dataset_name $bigquery_project_db
 }
 
 # Create the Azure Search Index
@@ -122,7 +122,7 @@ function create_search_service(){
     echo "AZURE_SEARCH_INDEX_NAME=$indexName" >> .env
 
     echo "Load the queries to Search"
-    python util/load-queries-to-search.py --data_file $query_examples_file_name
+    python utils/load-queries-to-search.py --data_file $query_examples_file_name
 }
 
 function create_env(){    echo "Creating .env file"

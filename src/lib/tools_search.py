@@ -12,11 +12,11 @@ class FetchSimilarQueries(Function):
         load_dotenv(override=True)
         super().__init__(
             name="fetch_similar_queries",
-            description="YFetch similar user questions and their corresponding queries.",
+            description="Fetch similar user questions and their corresponding queries.",
             parameters=[
                 Property(
                     name="question",
-                    description="The user question to find similar queries",
+                    description="The user question to find similar queries. In the same language as the user question.",
                     type="string",
                     required=True,
                 )
@@ -59,7 +59,7 @@ class FetchSimilarQueries(Function):
             result = """Examples of similar User Questions with their corresponding BigQuery:\n"""
             result += "\n\n".join(
                 [
-                    f"User Question: {doc['question']}\nQuery: {doc['query']}"
+                    f"User Question: {doc['question']}\n\n Query: {doc['query']}"
                     for doc in docs
                 ]
             )

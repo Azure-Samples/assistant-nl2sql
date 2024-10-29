@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from faker import Faker
 import argparse
 
+## TO DO: AUTOMATE PROCEDURE FOR SIMILARITY CALCULATION
 
 class SampleDatabaseCreator:
     def __init__(self):
