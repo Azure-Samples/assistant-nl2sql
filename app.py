@@ -62,8 +62,6 @@ assistant = AIAssistant(
     functions=functions,
 )
 
-FLASK_API_URL = os.getenv("FLASK_API_URL", "http://localhost:5000")
-
 st.set_page_config(page_title="DAVE", page_icon="🕵️")
 
 # Apply custom CSS
