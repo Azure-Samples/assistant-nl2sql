@@ -58,7 +58,7 @@ You need to install [Docker](https://www.docker.com/products/docker-desktop/)
 
 - Build the docker image:
 ```bash
-docker build -t bigassistant-app:latest .
+docker build -t bigqueryassistant-app:latest .
 ```
 
 - Start the services defined in the [docker-compose](docker-compose.yml)
