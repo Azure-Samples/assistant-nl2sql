@@ -54,6 +54,8 @@ streamlit run app.py
 ```
 
 3. **Docker Image and Container:**
+You need to install [Docker](https://www.docker.com/products/docker-desktop/) 
+
 - Build the docker image:
 ```bash
 docker build -t bigassistant-app:latest .
