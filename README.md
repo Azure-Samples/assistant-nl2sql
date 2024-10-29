@@ -11,6 +11,13 @@ Assistant NL2SQL is a natural language processing tool that converts natural lan
 - High accuracy and performance
 - Auto correction given possible errors
 
+
+## Stack <br>
+![Stacl](./images/assistants_stack.png)
+
+- Built our own [tools postgres](src/lib/tools_postgres.py) and [tools bigquery](src/lib/tools_postgres.py) using Function Calling, to interact with the databases
+
+
 ## Setup
 
 To setup the project, clone the repository and install the dependencies:
