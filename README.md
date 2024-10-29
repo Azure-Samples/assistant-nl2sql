@@ -82,7 +82,7 @@ az login
 ./set_up.sh run_all bigquery
 ```
 
-- You can provide [examples](data/examples.csv) of queries that the assistant can use as few shot examples. Those examples will be indexed and available to the assistant through a tool call.
+- You can provide [examples](data/examples.csv) of queries that the assistant can use as few shot examples. Those examples will be indexed and available to the assistant through a tool call. The examples should be adapted to the database syntax.
 
 ## Supported Databases:
 
