@@ -18,9 +18,11 @@ class StreamlitEventHandler:
         # Clear the latest text box which is for the code output
         self.text_boxes[-1].empty()
         # Add the logs to the code output
-        self.text_boxes[-1].info(
-            f"**Tools Outputs:** {tools_outputs[0].get('output','')}"
-        )
+        for output in tools_outputs:
+            if 'output' in output:
+                self.text_boxes[-1].code(output['output'], language='sql')
+            else:
+                self.text_boxes[-1].info(f"**Tools Outputs:** {output}")
 
     def update_final_answer(self, answer, total_tokens):
         self.text_boxes[-1] = st.expander(label="**🕵️ Assistant** \n\n ")

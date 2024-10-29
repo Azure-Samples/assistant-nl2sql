@@ -45,8 +45,17 @@ python src/main.py --database bigquery
 ```bash
 streamlit run app.py
 ```
-- To deploy it as a WebApp:
-##TO DO:
+
+## Docker Image
+- Build the docker image (for bigquery):
+```bash
+docker build -t bigassistant-app:latest .
+```
+
+- Start the services defined in the [docker-compose](docker-compose.yml)
+```bash
+docker-compose up
+```
 
 ## Examples
 You can test the assistant with the following examples:

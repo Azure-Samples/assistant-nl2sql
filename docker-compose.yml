@@ -1,0 +1,22 @@
+version: '3.7'
+
+services:
+  streamlit:
+    image: bigassistant-app:latest
+    build: .
+    ports:
+      - "8501:8501"
+    secrets:
+      - service-account
+    environment:
+      - SERVICE_ACCOUNT_SECRET_NAME=/mnt/secrets/service-account
+      - AZURE_OPENAI_KEY=${AZURE_OPENAI_KEY}
+      - AZURE_OPENAI_API_VERSION=${AZURE_OPENAI_API_VERSION}
+      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT}
+      - AZURE_OPENAI_MODEL_NAME=${AZURE_OPENAI_MODEL_NAME}
+    volumes:
+      - .:/app
+
+secrets:
+  service-account:
+    file: ./secrets/demomeli-439613-11b04c382041.json

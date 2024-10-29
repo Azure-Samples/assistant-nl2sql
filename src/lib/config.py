@@ -26,22 +26,19 @@ class BigQueryConfig:
         load_dotenv(override=True)
 
         # Load BigQuery json directory path from .env file
-        self.keys_dir = os.getenv("SERVICE_ACCOUNT_JSON_PATH")
+        secret_name = os.getenv("SERVICE_ACCOUNT_SECRET_NAME")
+        if not secret_name:
+            raise ValueError("SERVICE_ACCOUNT_SECRET_NAME is not set in the environment variables.")
+
+        # Construct the path to the secret file
         project_root = os.path.abspath(os.path.dirname(__file__))
-        self.keys_dir = os.path.join(project_root, "..", "..", self.keys_dir)
+        secret_file_path = os.path.join(project_root, "..", "..", "secrets", secret_name)
 
-        # Check if the directory exists
-        if not os.path.isdir(self.keys_dir):
-            raise NotADirectoryError(
-                f"Service account JSON directory not found at {self.keys_dir}"
-            )
+        # Check if the secret file exists
+        if not os.path.isfile(secret_file_path):
+            raise FileNotFoundError(f"Secret file {secret_file_path} does not exist.")
 
-        # Find the JSON file in the directory
-        json_files = [f for f in os.listdir(self.keys_dir) if f.endswith(".json")]
-        if not json_files:
-            raise FileNotFoundError(f"No JSON files found in directory {self.keys_dir}")
-
-        self.service_account_json = os.path.join(self.keys_dir, json_files[0])
+        self.service_account_json = secret_file_path
         self.dataset_id = os.getenv("BIGQUERY_DATASET_ID")
         self.project_id = json.load(open(self.service_account_json))["project_id"]
 

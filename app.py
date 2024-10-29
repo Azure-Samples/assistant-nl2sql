@@ -62,7 +62,7 @@ assistant = AIAssistant(
     functions=functions,
 )
 
-st.set_page_config(page_title="DAVE", page_icon="🕵️")
+st.set_page_config(page_title="BigAssistant", page_icon="🕵️")
 
 # Apply custom CSS
 st.html(

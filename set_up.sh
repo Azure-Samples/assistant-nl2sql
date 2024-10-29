@@ -3,8 +3,9 @@
 prefix="demobigqueryaiassistant"
 location="eastus2"
 query_examples_file_name="./data/example_bigqueries.csv"   # The file with the example queries to load to the search index
-service_account_json_path="./secrets/"         # FOR BIGQUERY: The path to the service account json file CAN BE '' IF NOT USING BIGQUERY
+secret_file_name="demomeli-439613-11b04c382041.json"        # FOR BIGQUERY: The path to the service account json file CAN BE '' IF NOT USING BIGQUERY
 bigquery_project_db="sales_sample_db"                 # FOR BIGQUERY: The name of the BigQuery project, CAN BE '' IF NOT USING BIGQUERY
+app_name="bigassistant-app"                        # The name of the app
 ### END OF PARAMETERS ###
 
 ### Get the subscription id and the user id
@@ -21,6 +22,12 @@ ai_resource_ai_service=$ai_resource_name"-aiservice"
 searchServiceName=$ai_resource_name"-search"
 searchServiceApiVersion=2024-09-01-preview
 indexName="queries"
+
+container_registry=$ai_resource_name"acr"
+containerappenv_name=$ai_resource_name"-cenv"
+containerapp_name=$ai_resource_name"capp"
+
+secret_name="service-account"
 
 ###  Get the type of database to use
 database_type=$2
@@ -131,7 +138,7 @@ function create_env(){    echo "Creating .env file"
     echo "# delete this file when done with demos, or if you are not using it" >> .env
     echo "AZURE_OPENAI_ENDPOINT=https://$location.api.cognitive.microsoft.com/" >> .env
     echo "AZURE_OPENAI_KEY=$ai_service_api_key" >> .env
-    echo 'AZURE_OPENAI_API_VERSION="2024-05-01-preview"' >> .env
+    echo 'AZURE_OPENAI_API_VERSION="2024-08-01-preview"' >> .env
     echo 'AZURE_OPENAI_MODEL_NAME="gpt-4o"' >> .env
     echo 'AZURE_OPENAI_EMBEDDING_MODEL_NAME="text-embedding-ada-002"' >> .env
     if [ -n "$db_server_name" ]; then
@@ -153,37 +160,43 @@ function create_env(){    echo "Creating .env file"
     echo "AZURE_RESOURCE_GROUP=$ai_resource_name_resource_group_name" >> .env
 
     if [ -n "$service_account_json_path" ]; then
-        echo "SERVICE_ACCOUNT_JSON_PATH=$service_account_json_path" >> .env
+        echo "SERVICE_ACCOUNT_SECRET_NAME=$secret_file_name" >> .env
     fi
     if [ -n "$BIGQUERY_PROJECT_ID" ]; then
         echo "BIGQUERY_PROJECT_ID=$BIGQUERY_PROJECT_ID" >> .env
     fi 
 }
 
+function edit_docker_compose(){
+    cat "docker-compose.yml" | \
+    awk '{sub(/SECRET_NAME_PLACEHOLDER/,"'$secret_file_name'")}1' > docker-compose.tmp | \
+    mv docker-compose.tmp docker-compose.yml
+}
+
 
 function run_all() {
     create_resource_group
-    # create_hub
-    # create_project
-    # create_ai_service
-    # deploy_models
-    # add_connection_to_hub
-    # create_env
+    create_hub
+    create_project
+    create_ai_service
+    deploy_models
+    add_connection_to_hub
+    create_env
     create_search_service
-    # case $database_type in
-    #     postgresql)
-    #         create_postgresql
-    #         ;;
-    #     bigquery)
-    #         create_bigquery
-    #         ;;
-    #     *)
-    #     echo "Unsupported database type: $database_type"
-    #     exit 1
-    #     ;;
-    # esac
+    case $database_type in
+        postgresql)
+            create_postgresql
+            ;;
+        bigquery)
+            create_bigquery
+            ;;
+        *)
+        echo "Unsupported database type: $database_type"
+        exit 1
+        ;;
+    esac
+    edit_docker_compose
 }
-
 
 case $1 in
     create_resource_group)
