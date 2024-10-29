@@ -54,7 +54,7 @@ streamlit run app.py
 ```
 
 ## Docker Image
-- Build the docker image (for bigquery):
+- Build the docker image:
 ```bash
 docker build -t bigassistant-app:latest .
 ```
