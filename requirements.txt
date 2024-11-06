@@ -8,7 +8,7 @@ azure-search-documents==11.4.0
 azure-core
 streamlit==1.33.0
 flask>=0.12.3
-Flask-Cors==3.0.9
+Flask-Cors==4.0.2
 Flask-Security==3.0.0
 flask-jwt-simple[asymmetric_crypto]
 flask[async]
