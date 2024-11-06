@@ -2,4 +2,17 @@ openai>=1.37.1, <2.0.0
 python-dotenv>=1.0.1, <2.0.0
 ipykernel<=6.8.0
 psycopg2-binary
+<<<<<<< HEAD
 faker
+=======
+faker
+google-cloud-bigquery
+azure-search-documents==11.4.0
+azure-core
+streamlit==1.33.0
+flask>=0.12.3
+Flask-Cors==3.0.9
+Flask-Security==3.0.0
+flask-jwt-simple[asymmetric_crypto]
+flask[async]
+>>>>>>> db27782353516d941e9a0f3434676ca8941f2aff

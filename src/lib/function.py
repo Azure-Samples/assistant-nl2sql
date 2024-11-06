@@ -2,6 +2,10 @@ from abc import ABC, abstractmethod
 from pydantic import BaseModel
 from typing import Optional, Dict, List
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> db27782353516d941e9a0f3434676ca8941f2aff
 class Property(BaseModel):
     name: str
     type: str
@@ -65,4 +69,8 @@ class Function(BaseModel, ABC):
 
     @abstractmethod
     def function(self, **kwargs):
+<<<<<<< HEAD
         pass
+=======
+        pass
+>>>>>>> db27782353516d941e9a0f3434676ca8941f2aff
