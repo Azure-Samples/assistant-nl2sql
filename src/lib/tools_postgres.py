@@ -1,16 +1,16 @@
 import psycopg2
 from psycopg2 import sql
 from .function import Function, Property
-from .config import config
+from .config import PGConfig as config
 
 class GetDBSchema(Function):
     def __init__(self):
         super().__init__(
             name="get_db_schema",
             description="Get the schema of the postgres database",
-        )
+        )        
     def function(self):
-        conn = psycopg2.connect(**config.db_params)
+        conn = psycopg2.connect(**config().db_params)
         cursor = conn.cursor()
         
         # Query to get the table creation statements
@@ -91,7 +91,7 @@ class RunSQLQuery(Function):
         )
     def function(self, table_name, query):
         try:
-            conn = psycopg2.connect(**config.db_params)
+            conn = psycopg2.connect(**config().db_params)
             cursor = conn.cursor()
             cursor.execute(query)
             results = cursor.fetchall()
@@ -102,14 +102,14 @@ class RunSQLQuery(Function):
             if e.pgcode == '42P01':
                 return f"Error running query: {e}\n Table {table_name} does not exist"
             elif e.pgcode == '42703':
-                conn = psycopg2.connect(**config.db_params)
+                conn = psycopg2.connect(**config().db_params)
                 cursor = conn.cursor()
                 cursor.execute(f"SELECT * FROM {table_name} LIMIT 1;")
                 colnames = [desc[0] for desc in cursor.description]
                 return f"On of the columns does not exist" + "\n The following columns exist:\n" + " | ".join(colnames)
             else:
                 # List the available tables
-                conn = psycopg2.connect(**config.db_params)
+                conn = psycopg2.connect(**config().db_params)
                 cursor = conn.cursor()
                 cursor.execute("""
                     SELECT table_name
@@ -129,7 +129,7 @@ class ListTables(Function):
         )
     def function(self):
         try:
-            conn = psycopg2.connect(**config.db_params)
+            conn = psycopg2.connect(**config().db_params)
             cursor = conn.cursor()
             cursor.execute("""
                 SELECT table_name
@@ -168,7 +168,7 @@ class FetchDistinctValues(Function):
     def function(self, table_name, column_name):
         try:
             # Connect to the PostgreSQL database
-            conn = psycopg2.connect(**config.db_params)
+            conn = psycopg2.connect(**config().db_params)
             cursor = conn.cursor()
 
             # Execute the query to fetch distinct values with a limit
@@ -237,7 +237,7 @@ class FetchSimilarValues(Function):
     def function(self, table_name, column_name, value):
         try:
             # Connect to the PostgreSQL database
-            conn = psycopg2.connect(**config.db_params)
+            conn = psycopg2.connect(**config().db_params)
             cursor = conn.cursor()
 
             # Execute the query to fetch distinct values with a limit
@@ -272,7 +272,7 @@ class FetchSimilarValues(Function):
         except psycopg2.Error as e:
             if e.pgcode == '42703':  # Undefined column error code
                 # return the available column names
-                conn = psycopg2.connect(**config.db_params)
+                conn = psycopg2.connect(**config().db_params)
                 cursor = conn.cursor()
                 cursor.execute(f"SELECT * FROM {table_name} LIMIT 1;")
                 colnames = [desc[0] for desc in cursor.description]
@@ -280,7 +280,3 @@ class FetchSimilarValues(Function):
             else:
                 print(f"Error fetching similar values: {e}")
                 return f"Error fetching similar values: {e}"
-
-
-
-## BIGQUERY FUNCTIONS

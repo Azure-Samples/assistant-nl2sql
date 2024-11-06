@@ -61,28 +61,32 @@ class SQLAssistant:
         self.assistant.chat()
 
 
-# Create Postgres Assistant
-sql_functions = [
-    GetDBSchema(),
-    RunSQLQuery(),
-    FetchDistinctValues(),
-    FetchSimilarValues(),
-    ListTables(),
-    FetchSimilarQueries(),
-]
-postgres_assistant = SQLAssistant(sql_functions, "instructions_postgres.jinja2")
+# Create a method to initialize the assistant based on the database type
+def initialize_assistant(database_type):
+    if database_type == "postgresql":
+        sql_functions = [
+            GetDBSchema(),
+            RunSQLQuery(),
+            FetchDistinctValues(),
+            FetchSimilarValues(),
+            ListTables(),
+            FetchSimilarQueries(),
+        ]
+        instructions_file = "instructions_postgres.jinja2"
+    elif database_type == "bigquery":
+        sql_functions = [
+            BigQueryGetDBSchema(),
+            BigQueryRunSQLQuery(),
+            BigQueryFetchDistinctValues(),
+            BigQueryFetchSimilarValues(),
+            BigQueryListTables(),
+            FetchSimilarQueries(),
+        ]
+        instructions_file = "instructions_bigquery.jinja2"
+    else:
+        raise ValueError(f"Unsupported database type: {database_type}")
 
-
-# Create BigQuery Assistant
-bigquery_functions = [
-    BigQueryGetDBSchema(),
-    BigQueryRunSQLQuery(),
-    BigQueryFetchDistinctValues(),
-    BigQueryFetchSimilarValues(),
-    BigQueryListTables(),
-    FetchSimilarQueries(),
-]
-bigquery_assistant = SQLAssistant(bigquery_functions, "instructions_bigquery.jinja2")
+    return SQLAssistant(sql_functions, instructions_file)
 
 # Main function
 if __name__ == "__main__":
@@ -91,11 +95,8 @@ if __name__ == "__main__":
         "--database",
         choices=["postgresql", "bigquery"],
         required=True,
-        help="Specify the database type: 'postgres' or 'bigquery'",
+        help="Specify the database type: 'postgresql' or 'bigquery'",
     )
     args = parser.parse_args()
-    if args.database == "postgres":
-        sql_assistant = postgres_assistant
-    elif args.database == "bigquery":
-        sql_assistant = bigquery_assistant
+    sql_assistant = initialize_assistant(args.database)
     sql_assistant.chat()

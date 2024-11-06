@@ -1,6 +1,6 @@
 from google.cloud import bigquery
 from .function import Function, Property
-from .config import bigquery_config as config
+from .config import BigQueryConfig as config
 
 
 class GetDBSchema(Function):
@@ -11,6 +11,7 @@ class GetDBSchema(Function):
         )
 
     def function(self):
+        config = config()
         client = bigquery.Client.from_service_account_json(config.service_account_json)
         dataset_ref = client.dataset(config.dataset_id)
         tables = client.list_tables(dataset_ref)

@@ -1,27 +1,12 @@
 import os
 from dotenv import load_dotenv
-<<<<<<< HEAD
-=======
 import json
 
->>>>>>> db27782353516d941e9a0f3434676ca8941f2aff
 
-class Config:
+class PGConfig:
     def __init__(self):
         load_dotenv(override=True)
         self.db_params = {
-<<<<<<< HEAD
-            'dbname': os.getenv('AZURE_POSTGRES_DATABASE'),
-            'user': f"{os.getenv('AZURE_POSTGRES_USER')}",
-            'password': os.getenv('AZURE_POSTGRES_PASSWORD'),
-            'host': f"{os.getenv('AZURE_POSTGRES_SERVER')}" + ".postgres.database.azure.com",
-            'port': 5432,
-            'sslmode': 'require'
-        }
-        self.verbose = True
-
-config = Config()
-=======
             "dbname": os.getenv("AZURE_POSTGRES_DATABASE"),
             "user": f"{os.getenv('AZURE_POSTGRES_USER')}",
             "password": os.getenv("AZURE_POSTGRES_PASSWORD"),
@@ -33,7 +18,7 @@ config = Config()
         self.verbose = True
 
 
-config = Config()
+# config = Config()
 
 
 class BigQueryConfig:
@@ -58,5 +43,4 @@ class BigQueryConfig:
         self.project_id = json.load(open(self.service_account_json))["project_id"]
 
 
-bigquery_config = BigQueryConfig()
->>>>>>> db27782353516d941e9a0f3434676ca8941f2aff
+# bigquery_config = BigQueryConfig()
