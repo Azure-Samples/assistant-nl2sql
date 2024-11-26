@@ -12,3 +12,4 @@ Flask-Cors==3.0.9
 Flask-Security==3.0.0
 flask-jwt-simple[asymmetric_crypto]
 flask[async]
+sqlalchemy

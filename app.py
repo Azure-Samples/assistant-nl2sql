@@ -42,7 +42,7 @@ def initialize_tools_and_instructions(database):
             "instructions",
             "instructions_bigquery.jinja2",
         )
-    elif database == "postgres":
+    elif database == "postgresql":
         functions = [
             GetDBSchemaPostgres(),
             RunSQLQueryPostgres(),
@@ -58,7 +58,7 @@ def initialize_tools_and_instructions(database):
             "instructions_postgres.jinja2",
         )
     else:
-        raise ValueError("Unsupported database type. Choose either 'bigquery' or 'postgres'.")
+        raise ValueError("Unsupported database type. Choose either 'bigquery' or 'postgresql'.")
 
     tools = [{"type": "function", "function": f.to_dict()} for f in functions]
     instructions = open(instructions_path).read()
@@ -99,7 +99,7 @@ st.set_page_config(page_title="BigAssistant", page_icon="🕵️")
 
 # Get the database parameter from the query string
 database = st.sidebar.selectbox('What is your database?',
-                                    ['bigquery', 'postgres'])
+                                    ['bigquery', 'postgresql'])
 
 # Initialize the assistant
 assistant = initialize_assistant(database)

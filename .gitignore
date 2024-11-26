@@ -163,3 +163,5 @@ cython_debug/
 secrets/*
 !secrets/.gitkeep
 util/test.py
+data/*.xlsx
+data/*.csv
