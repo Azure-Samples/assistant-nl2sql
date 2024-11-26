@@ -113,7 +113,7 @@ class FetchDistinctValues(Function):
                     name="dataset_id",
                     description="The dataset id which contains the table",
                     type="string",
-                    required=True
+                    required=True,
                 ),
                 Property(
                     name="table_name",

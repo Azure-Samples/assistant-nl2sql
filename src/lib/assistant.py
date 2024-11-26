@@ -157,6 +157,7 @@ class AIAssistant:
             return ""
         else:
             return queries[-1]
+
     def create_response(
         self,
         question: str,

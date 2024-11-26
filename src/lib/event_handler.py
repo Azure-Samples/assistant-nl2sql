@@ -19,8 +19,8 @@ class StreamlitEventHandler:
         self.text_boxes[-1].empty()
         # Add the logs to the code output
         for output in tools_outputs:
-            if 'output' in output:
-                self.text_boxes[-1].code(output['output'], language='sql')
+            if "output" in output:
+                self.text_boxes[-1].code(output["output"], language="sql")
             else:
                 self.text_boxes[-1].info(f"**Tools Outputs:** {output}")
 

@@ -88,6 +88,7 @@ def initialize_assistant(database_type):
 
     return SQLAssistant(sql_functions, instructions_file)
 
+
 # Main function
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="SQL Assistant")

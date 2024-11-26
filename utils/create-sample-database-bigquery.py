@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from faker import Faker
 import argparse
 import sys
+
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from src.lib.config import bigquery_config as config
 
@@ -18,7 +19,9 @@ class SampleDatabaseCreator:
         if not config.service_account_json:
             raise FileNotFoundError(f"Service account JSON directory not found")
 
-        self.client = bigquery.Client.from_service_account_json(config.service_account_json)
+        self.client = bigquery.Client.from_service_account_json(
+            config.service_account_json
+        )
 
     def create_dataset_and_tables(self, dataset_name):
         # Create new dataset

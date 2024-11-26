@@ -28,11 +28,15 @@ class BigQueryConfig:
         # Load BigQuery json directory path from .env file
         secret_name = os.getenv("SERVICE_ACCOUNT_SECRET_NAME")
         if not secret_name:
-            raise ValueError("SERVICE_ACCOUNT_SECRET_NAME is not set in the environment variables.")
+            raise ValueError(
+                "SERVICE_ACCOUNT_SECRET_NAME is not set in the environment variables."
+            )
 
         # Construct the path to the secret file
         project_root = os.path.abspath(os.path.dirname(__file__))
-        secret_file_path = os.path.join(project_root, "..", "..", "secrets", secret_name)
+        secret_file_path = os.path.join(
+            project_root, "..", "..", "secrets", secret_name
+        )
 
         # Check if the secret file exists
         if not os.path.isfile(secret_file_path):
