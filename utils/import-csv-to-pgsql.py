@@ -4,6 +4,7 @@ from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from dotenv import load_dotenv
 import os
 from sqlalchemy import create_engine
+import chardet
 
 load_dotenv(override=True)
 
@@ -35,8 +36,12 @@ def get_pg_connection(database_name="postgres"):
 
 
 def import_csv_to_pgsql(csv_file_path, database_name, table_name):
+
+    with open(csv_file_path, 'rb') as f:
+        result = chardet.detect(f.read())
+    
     # Read CSV file
-    df = pd.read_csv(csv_file_path)
+    df = pd.read_csv(csv_file_path, encoding=result['encoding'])
 
     # Create SQLAlchemy engine
     engine = create_engine(get_pg_connection(database_name))
