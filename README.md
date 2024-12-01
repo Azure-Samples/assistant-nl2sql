@@ -83,6 +83,8 @@ Show me the total sales amount for each seller
 ## Infrastructure
 You can use the shell script `set_up.sh` to set up the infrastructure on Azure. This script will create a resource group, a storage account, a container, and a PostgreSQL database. To run the script, you need to have the Azure CLI installed and be logged in. You can install the Azure CLI by following the instructions [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli).
 
+Its necessary to install an extension: az extension add -n ml
+
 Please, pay attention to the costs of the resources created by the script. 
 
 - Edit the parameters section in [set_up.sh](set_up.sh)

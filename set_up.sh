@@ -95,11 +95,6 @@ function create_postgresql() {
     fqdn=$(az postgres flexible-server show --resource-group $ai_resource_name_resource_group_name --name $db_server_name --query "fullyQualifiedDomainName" --output tsv)
     connection_string="postgres://$db_user:$db_password@$fqdn:5432/$db_name"
 
-    
-    echo "AZURE_POSTGRES_SERVER=$db_server_name" >> .env
-    echo "AZURE_POSTGRES_DATABASE=$db_name" >> .env
-    echo "AZURE_POSTGRES_USER=$db_user" >> .env
-    echo "AZURE_POSTGRES_PASSWORD=$db_password" >> .env
     # echo "Loading data to PostgreSQL"
     #python utils/create-sample-database.py
 
@@ -186,7 +181,6 @@ function run_all() {
     create_ai_service
     deploy_models
     add_connection_to_hub
-    create_env
     create_search_service
     case $database_type in
         postgresql)
@@ -201,6 +195,7 @@ function run_all() {
         ;;
     esac
     edit_docker_compose
+    create_env
 }
 
 case $1 in
