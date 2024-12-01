@@ -42,14 +42,13 @@ def import_csv_to_pgsql(csv_file_path, database_name, table_name):
 
 # Example usage
 if __name__ == "__main__":
-    database_name = 'sample_db_vj'
+    database_name = 'virtual_assistant_db'
     # Create database if not exists
-    # create_database(database_name)
+    create_database(database_name)
 
     # Import CSV files to PostgreSQL
     table_files = {
-        'table-1': './data/table1.csv',
-        'table-2': './data/table2.csv',
+        'requisitions': 'assistant-nl2sql/data/requisitions_dataset_sap_20241201.csv',
     }
 
     for table_name, file_path in table_files.items():
