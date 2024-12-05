@@ -254,6 +254,7 @@ class AIAssistant:
         run_instructions: str = None,
         max_retries: int = 5,
         retry_delay: int = 20,
+        verbose: bool = True,
     ) -> str:
         if thread_id is None:
             thread = self.create_thread()
@@ -290,13 +291,15 @@ class AIAssistant:
                         run_id=run.id,
                         tool_outputs=tool_outputs,
                     )
-                    event_handler.update_tools_called(
-                        arguments[-1].get("tool_call_name", "")
-                    )
-                    event_handler.update_tools_inputs(
-                        arguments[-1].get("arguments", "")
-                    )
-                    event_handler.update_tools_outputs(tool_outputs)
+                    if verbose:
+                        event_handler.update_tools_called(
+                            arguments[-1].get("tool_call_name", "")
+                        )
+                        event_handler.update_tools_inputs(
+                            arguments[-1].get("arguments", "")
+                        )
+                        event_handler.update_tools_outputs(tool_outputs)
+
                 time.sleep(0.5)
 
             if run.status == "failed":
@@ -315,6 +318,6 @@ class AIAssistant:
                     + self.extract_run_message(
                         run=run, thread_id=thread_id, output_role=False
                     ),
-                    tokens,
+                    tokens
                 )
                 return

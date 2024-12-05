@@ -83,7 +83,7 @@ def initialize_assistant(database):
     # Create an AI Assistant
     assistant = AIAssistant(
         client=client,
-        verbose=True,
+        verbose=False,
         name="AI Assistant",
         description="An AI Assistant",
         instructions=instructions,
@@ -159,11 +159,12 @@ if prompt := st.chat_input("Ask me a question about your dataset"):
     )
 
     # Create the event handler
-    event_handler = StreamlitEventHandler(st.session_state.text_boxes)
+    event_handler = StreamlitEventHandler(st.session_state.text_boxes, verbose=False)
 
     # Make a request to the Flask server
     assistant.create_response_with_handler(
         question=prompt,
         event_handler=event_handler,
         thread_id=st.session_state.thread_id,
+        verbose=False,
     )
