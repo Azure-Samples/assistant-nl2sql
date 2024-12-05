@@ -240,7 +240,7 @@ class SampleDatabaseCreator:
 
 
 if __name__ == "__main__":
-    database_name = "sales_sample_db"
+    database_name = os.getenv("AZURE_POSTGRES_DB")
     creator = SampleDatabaseCreator()
 
     creator.create_database_and_tables(database_name)

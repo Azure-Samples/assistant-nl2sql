@@ -18,4 +18,4 @@ services:
 
 secrets:
   service-account:
-    file: ./secrets/SECRET_NAME_PLACEHOLDER
+    file: ./secrets/demomeli-439613-11b04c382041.json

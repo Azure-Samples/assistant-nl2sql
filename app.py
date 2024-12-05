@@ -83,7 +83,7 @@ def initialize_assistant(database):
     # Create an AI Assistant
     assistant = AIAssistant(
         client=client,
-        verbose=False,
+        verbose=True,
         name="AI Assistant",
         description="An AI Assistant",
         instructions=instructions,
@@ -99,7 +99,7 @@ st.set_page_config(page_title="BigAssistant", page_icon="🕵️")
 
 # Get the database parameter from the query string
 database = st.sidebar.selectbox('What is your database?',
-                                    ['bigquery', 'postgresql'])
+                                    ['postgresql', 'bigquery'])
 
 # Initialize the assistant
 assistant = initialize_assistant(database)
@@ -166,5 +166,5 @@ if prompt := st.chat_input("Ask me a question about your dataset"):
         question=prompt,
         event_handler=event_handler,
         thread_id=st.session_state.thread_id,
-        verbose=False,
+        verbose=True,
     )
