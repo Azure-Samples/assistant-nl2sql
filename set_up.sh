@@ -6,6 +6,7 @@ query_examples_file_name="./data/examples.csv"   # The file with the example que
 secret_file_name="demomeli-439613-11b04c382041.json"        # FOR BIGQUERY: The path to the service account json file CAN BE '' IF NOT USING BIGQUERY
 bigquery_dataset_id="sales_sample_db_2"                 # FOR BIGQUERY: The name of the BigQuery project, CAN BE '' IF NOT USING BIGQUERY
 app_name="bigassistant-app"                        # The name of the app
+db_name="sales_sample_db"                          # The name of the database
 ### END OF PARAMETERS ###
 
 ### Get the subscription id and the user id
@@ -81,7 +82,6 @@ function add_connection_to_hub() {
 
 function create_postgresql() {
     db_server_name="${prefix}pgserver"
-    db_name="${prefix}database"
     db_user="${prefix}user"
     db_password=$(openssl rand -base64 12)
 
@@ -94,15 +94,17 @@ function create_postgresql() {
 
     fqdn=$(az postgres server show --resource-group $ai_resource_name_resource_group_name --name $db_server_name --query "fullyQualifiedDomainName" --output tsv)
     connection_string="postgres://$db_user:$db_password@$fqdn:5432/$db_name"
-
-    echo "Loading data to PostgreSQL"
-    python utils/create-sample-database.py
-
 }
 
-function create_bigquery() {
-    echo "Creating BigQuery datasets"
-    python utils/create-sample-database-bigquery.py --dataset_name $bigquery_project_db
+function load_data() {
+    echo "Loading data to the database"
+    if [ "$database_type" == "postgresql" ]; then
+        echo "Loading data to PostgreSQL"
+        python utils/create-sample-database.py
+    elif [ "$database_type" == "bigquery" ]; then
+        echo "Loading data to BigQuery"
+        python utils/create-sample-database-bigquery.py --dataset_name $bigquery_dataset_id
+    fi
 }
 
 # Create the Azure Search Index
@@ -141,30 +143,18 @@ function create_env(){    echo "Creating .env file"
     echo 'AZURE_OPENAI_API_VERSION="2024-08-01-preview"' >> .env
     echo 'AZURE_OPENAI_MODEL_NAME="gpt-4o"' >> .env
     echo 'AZURE_OPENAI_EMBEDDING_MODEL_NAME="text-embedding-ada-002"' >> .env
-    if [ -n "$db_server_name" ]; then
+    if [ "$database_type" == "postgresql" ]; then
         echo "AZURE_POSTGRES_SERVER=$db_server_name" >> .env
-    fi
-    if [ -n "$db_name" ]; then
         echo "AZURE_POSTGRES_DATABASE=$db_name" >> .env
-    fi
-    if [ -n "$db_user" ]; then
-        echo "AZURE_POSTGRES_USER=$db_user" >> .env
-    fi
-    if [ -n "$db_password" ]; then
+        echo "AZURE_POSTGRES_USER=$db_user@$db_server_name" >> .env
         echo "AZURE_POSTGRES_PASSWORD=$db_password" >> .env
-    fi
-    if [ -n "$connection_string" ]; then
         echo "AZURE_POSTGRES_CONNECTION_STRING=$connection_string" >> .env
+    elif [ "$database_type" == "bigquery" ]; then
+        echo "SERVICE_ACCOUNT_SECRET_NAME=$secret_file_name" >> .env
+        echo "BIGQUERY_DATASET_ID=$bigquery_dataset_id" >> .env
     fi
     echo "AZURE_SUBSCRIPTION_ID=$subscription_id" >> .env
     echo "AZURE_RESOURCE_GROUP=$ai_resource_name_resource_group_name" >> .env
-
-    if [ -n "$secret_file_name" ]; then
-        echo "SERVICE_ACCOUNT_SECRET_NAME=$secret_file_name" >> .env
-    fi
-    if [ -n "$bigquery_dataset_id" ]; then
-        echo "BIGQUERY_DATASET_ID=$bigquery_dataset_id" >> .env
-    fi 
 }
 
 function edit_docker_compose(){
@@ -181,7 +171,6 @@ function run_all() {
     create_ai_service
     deploy_models
     add_connection_to_hub
-    create_env
     create_search_service
     case $database_type in
         postgresql)
@@ -195,6 +184,8 @@ function run_all() {
         exit 1
         ;;
     esac
+    create_env
+    load_data
     edit_docker_compose
 }
 
