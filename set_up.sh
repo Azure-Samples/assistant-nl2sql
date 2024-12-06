@@ -1,6 +1,6 @@
 #!/bin/bash
 ### PARAMETERS ###
-prefix="suraagent"
+prefix="demoassistant"
 location="eastus2"
 query_examples_file_name="./data/examples.csv"   # The file with the example queries to load to the search index
 secret_file_name="demomeli-439613-11b04c382041.json"        # FOR BIGQUERY: The path to the service account json file CAN BE '' IF NOT USING BIGQUERY
