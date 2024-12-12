@@ -99,7 +99,7 @@ st.set_page_config(page_title="BigAssistant", page_icon="🕵️")
 
 # Get the database parameter from the query string
 database = st.sidebar.selectbox('What is your database?',
-                                    ['bigquery', 'postgresql'])
+                                    ['postgresql', 'bigquery'])
 
 # Initialize the assistant
 assistant = initialize_assistant(database)
@@ -159,11 +159,12 @@ if prompt := st.chat_input("Ask me a question about your dataset"):
     )
 
     # Create the event handler
-    event_handler = StreamlitEventHandler(st.session_state.text_boxes)
+    event_handler = StreamlitEventHandler(st.session_state.text_boxes, verbose=False)
 
     # Make a request to the Flask server
     assistant.create_response_with_handler(
         question=prompt,
         event_handler=event_handler,
         thread_id=st.session_state.thread_id,
+        verbose=True,
     )

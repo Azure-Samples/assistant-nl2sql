@@ -2,8 +2,9 @@ import streamlit as st
 
 
 class StreamlitEventHandler:
-    def __init__(self, text_boxes):
+    def __init__(self, text_boxes, verbose=True):
         self.text_boxes = text_boxes
+        self.verbose = verbose
 
     def update_tools_called(self, tools_called):
         self.text_boxes[-1] = st.expander("**💻 Code**", expanded=True)
@@ -25,6 +26,7 @@ class StreamlitEventHandler:
                 self.text_boxes[-1].info(f"**Tools Outputs:** {output}")
 
     def update_final_answer(self, answer, total_tokens):
-        self.text_boxes[-1] = st.expander(label="**🕵️ Assistant** \n\n ")
+        self.text_boxes[-1] = st.expander(label="**🕵️ Assistant** \n\n ", expanded=True)
         self.text_boxes[-1].info(f"{answer}")
-        self.text_boxes[-1].info(f"**Total Tokens:** {total_tokens}")
+        if self.verbose:
+            self.text_boxes[-1].info(f"**Total Tokens:** {total_tokens}")
