@@ -2,7 +2,7 @@
 ### PARAMETERS ###
 prefix="demoassistant"
 location="eastus2"
-query_examples_file_name="./data/examples.csv"   # The file with the example queries to load to the search index
+query_examples_file_name="./data/examples.csv"          # The file with the example queries to load to the search index
 secret_file_name="demomeli-439613-11b04c382041.json"        # FOR BIGQUERY: The path to the service account json file CAN BE '' IF NOT USING BIGQUERY
 bigquery_dataset_id="sales_sample_db_2"                 # FOR BIGQUERY: The name of the BigQuery project, CAN BE '' IF NOT USING BIGQUERY
 app_name="bigassistant-app"                        # The name of the app
@@ -57,7 +57,7 @@ function create_ai_service() {
 
 function deploy_models() {
     echo "Deploying GPT-4o"
-    az cognitiveservices account deployment create --name $ai_resource_ai_service --resource-group $ai_resource_name_resource_group_name --deployment-name "gpt-4o" --model-name "gpt-4o" --model-version "2024-05-13" --model-format "OpenAI" --sku-capacity "1" --sku-name "Standard" --capacity "100"
+    az cognitiveservices account deployment create --name $ai_resource_ai_service --resource-group $ai_resource_name_resource_group_name --deployment-name "gpt-4o" --model-name "gpt-4o" --model-version "2024-05-13" --model-format "OpenAI" --sku-capacity "1" --sku-name "Standard" #--capacity "100"
 
     echo "Deploying Text-embedding-ada-002"
     az cognitiveservices account deployment create --name $ai_resource_ai_service --resource-group $ai_resource_name_resource_group_name --deployment-name "text-embedding-ada-002" --model-name "text-embedding-ada-002" --model-format "OpenAI" --model-version "2" --sku-capacity "1" --sku-name "Standard" --capacity "20"
@@ -86,13 +86,13 @@ function create_postgresql() {
     db_password=$(openssl rand -base64 12)
 
     echo "Creating PostgreSQL database"
-    az postgres server create --resource-group $ai_resource_name_resource_group_name --name $db_server_name --location $location --admin-user $db_user --admin-password $db_password --sku-name B_Gen5_1
-    az postgres db create --resource-group $ai_resource_name_resource_group_name --server-name $db_server_name --name $db_name
+    az postgres flexible-server create --resource-group $ai_resource_name_resource_group_name --name $db_server_name --location $location --admin-user $db_user --admin-password $db_password 
+    az postgres flexible-server db --resource-group $ai_resource_name_resource_group_name --server-name $db_server_name --name $db_name
 
     current_ip=$(curl -s4 ifconfig.me)
-    az postgres server firewall-rule create --resource-group $ai_resource_name_resource_group_name --server-name $db_server_name --name AllowMyIP --start-ip-address $current_ip --end-ip-address $current_ip
+    az postgres flexible-server firewall-rule create --resource-group $ai_resource_name_resource_group_name --server-name $db_server_name --name AllowMyIP --start-ip-address $current_ip --end-ip-address $current_ip
 
-    fqdn=$(az postgres server show --resource-group $ai_resource_name_resource_group_name --name $db_server_name --query "fullyQualifiedDomainName" --output tsv)
+    fqdn=$(az postgres flexible-server show --resource-group $ai_resource_name_resource_group_name --name $db_server_name --query "fullyQualifiedDomainName" --output tsv)
     connection_string="postgres://$db_user:$db_password@$fqdn:5432/$db_name"
 }
 
@@ -187,6 +187,7 @@ function run_all() {
     create_env
     load_data
     edit_docker_compose
+    create_env
 }
 
 case $1 in

@@ -1,4 +1,5 @@
 from openai import AzureOpenAI
+import openai
 from openai.types.beta import Thread
 from openai.types.beta.threads import Run, Message
 from .function import Function, FunctionCall
@@ -31,14 +32,24 @@ class AIAssistant:
         self.tools = tools
         self.functions = functions
         self.auto_delete = auto_delete
-        self.assistant = self.client.beta.assistants.create(
+
+        try:
+            self.assistant = self.client.beta.assistants.create(
             name=self.name,
             description=self.description,
             instructions=self.instructions,
             model=self.model,
             tools=self.tools,
         )
-        self.assistant_id = self.assistant.id
+            
+            self.assistant_id = self.assistant.id
+
+        except openai.BadRequestError as e:
+            print(f"Error details: {e}")
+            print(f"Request data: {e.param}")
+
+
+        
 
     def create_thread(self) -> Thread:
         thread = self.client.beta.threads.create()
@@ -157,6 +168,7 @@ class AIAssistant:
             return ""
         else:
             return queries[-1]
+
     def create_response(
         self,
         question: str,

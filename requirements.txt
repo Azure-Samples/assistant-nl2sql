@@ -13,3 +13,5 @@ Flask-Security==3.0.0
 flask-jwt-simple[asymmetric_crypto]
 flask[async]
 sqlalchemy
+pandas
+chardet
