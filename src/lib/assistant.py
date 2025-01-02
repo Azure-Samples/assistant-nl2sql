@@ -12,7 +12,7 @@ class AIAssistant:
     def __init__(
         self,
         client: AzureOpenAI,
-        verbose: bool = False,
+        verbose: bool = True,
         name: str = "AI Assistant",
         description: str = "An AI Assistant",
         instructions: str = None,
@@ -218,7 +218,8 @@ class AIAssistant:
             if run.status == "failed":
                 retries += 1
                 print(
-                    f"Run failed. Retrying in {retry_delay} seconds... (Attempt {retries}/{max_retries})"
+                    f"Run failed with the message: {run.last_error.message} \
+                      Retrying in {retry_delay} seconds... (Attempt {retries}/{max_retries})"
                 )
                 time.sleep(retry_delay)
             else:

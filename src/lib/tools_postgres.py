@@ -20,8 +20,9 @@ class GetDBSchema(Function):
             """
             SELECT table_name
             FROM information_schema.tables
-            WHERE table_schema = 'public'
-        """
+            WHERE table_schema = 'public' 
+            and table_name not like '%_column_descriptions'
+            """
         )
 
         tables = cursor.fetchall()
@@ -35,12 +36,10 @@ class GetDBSchema(Function):
             cursor.execute(
                 sql.SQL(
                     """
-                SELECT column_name, data_type, character_maximum_length, is_nullable
-                FROM information_schema.columns
-                WHERE table_name = %s
-            """
-                ),
-                [table_name],
+                SELECT \"Column\", \"data_type\", \"character_maximum_length\", \"Description\"
+                FROM {}
+                """
+                ).format(sql.Identifier(table_name + "_column_descriptions"))
             )
             columns = cursor.fetchall()
 
@@ -152,6 +151,7 @@ class ListTables(Function):
                 SELECT table_name
                 FROM information_schema.tables
                 WHERE table_schema = 'public'
+                and table_name not like '%_column_descriptions'
             """
             )
             tables = cursor.fetchall()
@@ -168,7 +168,7 @@ class FetchDistinctValues(Function):
     def __init__(self):
         super().__init__(
             name="fetch_distinct_values",
-            description="Fetch the first 10 distinct values of a specified column for a certain table",
+            description="Fetch the first 50 distinct values of a specified column for a certain table",
             parameters=[
                 Property(
                     name="table_name",
@@ -197,7 +197,7 @@ class FetchDistinctValues(Function):
                              FROM {} \
                              GROUP BY {} \
                              ORDER BY qty DESC \
-                             LIMIT 10;"
+                             LIMIT 50;"
             ).format(
                 sql.Identifier(column_name),
                 sql.Identifier(table_name),
@@ -271,15 +271,20 @@ class FetchSimilarValues(Function):
 
             # Execute the query to fetch distinct values with a limit
             query = sql.SQL(
-                f"CREATE EXTENSION IF NOT EXISTS pg_trgm; \
-                              SELECT {column_name}, \
-                                     similarity(CAST({column_name} AS TEXT), \
-                                     '{value}') AS similarity_score \
-                              FROM {table_name} \
-                              WHERE similarity(CAST({column_name} AS TEXT), '{value}') > 0.7  \
-                              ORDER BY similarity_score DESC \
-                              LIMIT 10;"
-            )
+                    """
+                    CREATE EXTENSION IF NOT EXISTS pg_trgm;
+                    SELECT {column_name},
+                        similarity(CAST({column_name} AS TEXT), {value}) AS similarity_score
+                    FROM {table_name}
+                    WHERE similarity(CAST({column_name} AS TEXT), {value}) > 0.7
+                    ORDER BY similarity_score DESC
+                    LIMIT 10;
+                    """
+                ).format(
+                    column_name=sql.Identifier(column_name),
+                    value=sql.Literal(value),
+                    table_name=sql.Identifier(table_name),
+                )
 
             cursor.execute(query)
             rows = cursor.fetchall()
