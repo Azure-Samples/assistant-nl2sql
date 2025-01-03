@@ -31,7 +31,7 @@ containerapp_name=$ai_resource_name"capp"
 secret_name="service-account"
 
 ###  Get the type of database to use
-database_type=$2
+database_type="postgresql"
 
 function create_resource_group() {
     echo "Creating resource group: $ai_resource_name_resource_group_name"
@@ -100,7 +100,7 @@ function load_data() {
     echo "Loading data to the database"
     if [ "$database_type" == "postgresql" ]; then
         echo "Loading data to PostgreSQL"
-        python utils/create-sample-database.py
+        python utils/create-sample-database-postgres.py
     elif [ "$database_type" == "bigquery" ]; then
         echo "Loading data to BigQuery"
         python utils/create-sample-database-bigquery.py --dataset_name $bigquery_dataset_id
@@ -171,7 +171,7 @@ function run_all() {
     create_ai_service
     deploy_models
     add_connection_to_hub
-    create_search_service
+    #create_search_service
     case $database_type in
         postgresql)
             create_postgresql

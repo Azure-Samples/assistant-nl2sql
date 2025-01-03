@@ -27,7 +27,9 @@ git clone https://github.com/Azure-Samples/assistant-nl2sql.git
 cd assistant-nl2sql
 
 python -m venv venv
-source venv/bin/activate
+source venv/bin/activate -> MAC
+or
+.\venv\Scripts\activate -> Windows
 
 pip install -r requirements.txt
 ```
