@@ -33,15 +33,17 @@ class SampleDatabaseCreator:
         self.cursor = self.conn.cursor()
 
     def create_database_and_tables(self, database_name):
-        # Create new database
-        self.cursor.execute(f"DROP DATABASE IF EXISTS {database_name}")
-        self.cursor.execute(f"CREATE DATABASE {database_name}")
-
-        # Close the connection to the default database
-        self.cursor.close()
-        self.conn.close()
+        # Create database if it doesn't exist
+        self.cursor.execute(
+            sql.SQL("SELECT 1 FROM pg_catalog.pg_database WHERE datname = %s"),
+            [database_name],
+        )
+        exists = self.cursor.fetchone()
+        if not exists:
+            self.cursor.execute(sql.SQL("CREATE DATABASE {}").format(sql.Identifier(database_name)))
 
         # Connect to the new database
+        self.conn.close()
         self.conn = psycopg2.connect(
             dbname=database_name,
             user=self.db_params["user"],
@@ -50,8 +52,8 @@ class SampleDatabaseCreator:
             port=self.db_params["port"],
             sslmode=self.db_params["sslmode"],
         )
-
         self.cursor = self.conn.cursor()
+
 
         # Create tables
         create_products_table = f"""
@@ -240,8 +242,11 @@ class SampleDatabaseCreator:
 
 
 if __name__ == "__main__":
+    load_dotenv(override=True)
     database_name = os.getenv("AZURE_POSTGRES_DATABASE")
+    if database_name is None:
+        raise ValueError("AZURE_POSTGRES_DATABASE environment variable is not set")
     creator = SampleDatabaseCreator()
 
-    creator.create_database_and_tables(database_name)
-    creator.populate_sample_data(database_name)
+    creator.create_database_and_tables(str(database_name))
+    creator.populate_sample_data()

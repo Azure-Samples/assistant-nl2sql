@@ -15,3 +15,5 @@ flask[async]
 sqlalchemy
 pandas
 chardet
+speechrecognition
+pyaudio

@@ -79,6 +79,31 @@ Input:
 Show me the total sales amount for each seller
 ```
 
+## Speech-to-Text Functionality
+
+We have added a new feature that allows users to input questions via speech. This functionality uses Azure Cognitive Services for speech recognition. Here are the key points:
+
+- **Speech Recognition**: Users can click on the microphone icon to record their question. The recorded audio is sent to Azure Cognitive Services for speech-to-text conversion.
+- **Text Input**: Users can still input their questions via text using the input box.
+- **Integration**: The recognized text from the speech input is processed in the same way as text input, providing a seamless experience.
+
+### Additional Setup for pyaudio
+
+- **macOS**: On macOS, you need to install portaudio using Homebrew:
+```bash brew install portaudio```
+
+- **Windows**: Download the appropriate portaudio binary from  ([PortAudio](https://www.portaudio.com/download.html)) Downloads.
+Extract the files and follow the instructions to install.
+
+- **Windows**: On Linux, you can install portaudio using your package manager. For example, on Debian-based systems:
+```bash brew install portaudio```
+After installing portaudio, you can install pyaudio using pip:
+```pip install pyaudio```
+
+### How to Use
+
+1. **Text Input**: Simply type your question in the input box and press Enter.
+2. **Speech Input**: Click on the microphone icon next to the input box to start recording your question. The recognized text will be displayed and processed.
 
 ## Infrastructure
 You can use the shell script `set_up.sh` to set up the infrastructure on Azure. This script will create a resource group, a storage account, a container, and a PostgreSQL database. To run the script, you need to have the Azure CLI installed and be logged in. You can install the Azure CLI by following the instructions [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli).
