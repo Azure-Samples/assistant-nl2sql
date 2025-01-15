@@ -3,7 +3,6 @@ import os
 import streamlit as st
 import requests
 import speech_recognition as sr
-import sounddevice as sd
 from dotenv import load_dotenv
 from openai import AzureOpenAI
 from src.lib.event_handler import StreamlitEventHandler
@@ -146,21 +145,32 @@ if "thread_id" not in st.session_state:
 if "text_boxes" not in st.session_state:
     st.session_state.text_boxes = []
 
-# Speech-to-Text functionality
+# Speech-to-Text functionality using Azure Cognitive Services
 def recognize_speech():
+    subscription_key = os.getenv("AZURE_SPEECH_KEY")
+    region = os.getenv("AZURE_SPEECH_REGION")
+    endpoint = f"https://{region}.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1"
+
     recognizer = sr.Recognizer()
     with sr.Microphone() as source:
         st.info("Listening...")
         audio = recognizer.listen(source)
-        try:
-            text = recognizer.recognize_google(audio)
+        audio_data = audio.get_wav_data()
+
+        headers = {
+            "Ocp-Apim-Subscription-Key": subscription_key,
+            "Content-Type": "audio/wav; codecs=audio/pcm; samplerate=16000",
+        }
+
+        response = requests.post(endpoint, headers=headers, data=audio_data)
+        if response.status_code == 200:
+            result = response.json()
+            text = result["DisplayText"]
             st.success(f"Recognized: {text}")
             return text
-        except sr.UnknownValueError:
-            st.error("Google Speech Recognition could not understand audio")
-        except sr.RequestError as e:
-            st.error(f"Could not request results from Google Speech Recognition service; {e}")
-    return ""
+        else:
+            st.error(f"Error: {response.json()}")
+            return ""
 
 # Add a button to record audio
 if st.button("Record Audio"):
