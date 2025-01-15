@@ -2,6 +2,8 @@
 import os
 import streamlit as st
 import requests
+import speech_recognition as sr
+import sounddevice as sd
 from dotenv import load_dotenv
 from openai import AzureOpenAI
 from src.lib.event_handler import StreamlitEventHandler
@@ -144,7 +146,29 @@ if "thread_id" not in st.session_state:
 if "text_boxes" not in st.session_state:
     st.session_state.text_boxes = []
 
-if prompt := st.chat_input("Ask me a question about your dataset"):
+# Speech-to-Text functionality
+def recognize_speech():
+    recognizer = sr.Recognizer()
+    with sr.Microphone() as source:
+        st.info("Listening...")
+        audio = recognizer.listen(source)
+        try:
+            text = recognizer.recognize_google(audio)
+            st.success(f"Recognized: {text}")
+            return text
+        except sr.UnknownValueError:
+            st.error("Google Speech Recognition could not understand audio")
+        except sr.RequestError as e:
+            st.error(f"Could not request results from Google Speech Recognition service; {e}")
+    return ""
+
+# Add a button to record audio
+if st.button("Record Audio"):
+    prompt = recognize_speech()
+else:
+    prompt = st.chat_input("Ask me a question about your dataset")
+
+if prompt:
     st.session_state.messages.append(
         {"role": "user", "items": [{"type": "text", "content": prompt}]}
     )
