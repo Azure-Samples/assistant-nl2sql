@@ -87,6 +87,19 @@ We have added a new feature that allows users to input questions via speech. Thi
 - **Text Input**: Users can still input their questions via text using the input box.
 - **Integration**: The recognized text from the speech input is processed in the same way as text input, providing a seamless experience.
 
+### Additional Setup for pyaudio
+
+- **macOS**: On macOS, you need to install portaudio using Homebrew:
+```bash brew install portaudio```
+
+- **Windows**: Download the appropriate portaudio binary from  ([PortAudio](https://www.portaudio.com/download.html)) Downloads.
+Extract the files and follow the instructions to install.
+
+- **Windows**: On Linux, you can install portaudio using your package manager. For example, on Debian-based systems:
+```bash brew install portaudio```
+After installing portaudio, you can install pyaudio using pip:
+```pip install pyaudio```
+
 ### How to Use
 
 1. **Text Input**: Simply type your question in the input box and press Enter.

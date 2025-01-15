@@ -16,3 +16,4 @@ sqlalchemy
 pandas
 chardet
 speechrecognition
+pyaudio
